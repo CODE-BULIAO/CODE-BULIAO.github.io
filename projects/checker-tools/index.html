@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审校辅助工具集 · 项目详情</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 项目作品集</span>
+    <div class="nav-links">
+      <a href="../../index.html">首页</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">English</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Docker Compose</span>
+        <span class="tag green">数据工程 · 工具集</span>
+      </div>
+      <h1>🧰 审校辅助工具集</h1>
+      <p class="sub">checker_tools — 覆盖数据摄取→坏例生成→模型评测→训练集导出全链路的 4 合 1 Streamlit 工具箱</p>
+    </section>
+
+    <section class="detail-content">
+
+      <h2>项目概览</h2>
+      <p>
+        本项目是配套 <code>exam_smart_checker</code> / <code>exam_checker_agent</code> 的数据工程工具集，
+        将数据管道中最常用的 4 个独立操作封装为可独立访问的 Streamlit Web 工具，
+        通过统一启动器一键拉起，也支持 Docker Compose 容器化部署。
+      </p>
+      <div class="info-box">
+        <strong>应用场景：</strong>AI 审校系统的数据准备、质量评估、训练集构建全流程支持
+      </div>
+
+      <h2>4 个子工具</h2>
+
+      <div class="grid" style="margin-bottom:24px">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">📄 pdf2text</div>
+            <p style="font-size:.85rem;color:var(--muted)">端口 8302</p>
+            <div class="card-desc">从 PDF 试卷中提取题目文本，支持多栏版面与图文混排，输出结构化 JSON/JSONL。</div>
+            <div class="tag-list"><span class="tag">PyMuPDF</span><span class="tag">pdfplumber</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">🔬 process_badcase</div>
+            <p style="font-size:.85rem;color:var(--muted)">端口 8303</p>
+            <div class="card-desc">负样本/坏例工厂：对审校结果中的错误案例进行整理、分类、标注，生成可用于模型微调的对齐数据。</div>
+            <div class="tag-list"><span class="tag">LLM</span><span class="tag">数据标注</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">📊 evaluation</div>
+            <p style="font-size:.85rem;color:var(--muted)">端口 8304</p>
+            <div class="card-desc">AI 审校结果评测工具：计算精确率、召回率、F1 等指标，支持人工标注对比与批量评估报告。</div>
+            <div class="tag-list"><span class="tag">评测指标</span><span class="tag">LLM Judge</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">📋 excel_merger</div>
+            <p style="font-size:.85rem;color:var(--muted)">端口 8305</p>
+            <div class="card-desc">Excel 合并 → JSONL 训练数据导出：将多份 Excel 标注结果合并、去重、格式转换为下游训练框架可用的 JSONL 格式。</div>
+            <div class="tag-list"><span class="tag">pandas</span><span class="tag">openpyxl</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h2>技术栈</h2>
+      <div class="tag-list">
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit（各子工具 UI）</span>
+        <span class="tag">Docker Compose（容器部署）</span>
+        <span class="tag">PowerShell start_all.ps1（Windows 启动）</span>
+        <span class="tag">Shell start.sh（Linux/Mac 启动）</span>
+        <span class="tag">PyMuPDF / pdfplumber</span>
+        <span class="tag">pandas / openpyxl</span>
+      </div>
+
+      <h2>架构与部署</h2>
+      <div class="arch-box">checker_tools/
+├── main.py              # Streamlit 导航首页 (hub launcher)
+├── pdf2text/            # 子工具 1：PDF 解析  → port 8302
+├── process_badcase/     # 子工具 2：坏例工厂  → port 8303
+├── evaluation/          # 子工具 3：模型评测  → port 8304
+├── excel_merger/        # 子工具 4：Excel→JSONL → port 8305
+├── start_all.ps1        # Windows 一键启动
+├── start.sh             # Linux/Mac 一键启动
+└── docker-compose.yml   # 容器化部署</div>
+
+      <h2>核心设计</h2>
+
+      <p><strong>全链路数据管道覆盖</strong></p>
+      <p>
+        4 个工具覆盖了 AI 审校系统数据工程的完整链路：
+        <strong>PDF 解析</strong>（数据摄取）→ <strong>坏例生成</strong>（负样本构建）→
+        <strong>模型评测</strong>（质量验证）→ <strong>JSONL 导出</strong>（训练集交付）。
+      </p>
+
+      <p><strong>统一 Hub 启动器</strong></p>
+      <p>
+        <code>main.py</code> 作为导航首页，一键进入任意子工具；
+        <code>start_all.ps1</code> / <code>start.sh</code> 并行启动全部 4 个服务，
+        <code>docker-compose.yml</code> 支持一键容器化。
+      </p>
+
+      <h2>创新点 / 我做了什么</h2>
+      <ul>
+        <li>设计并实现 4 个独立 Streamlit 工具，覆盖数据工程全链路</li>
+        <li>构建统一 Hub 启动器与端口分配方案</li>
+        <li>编写 Docker Compose 配置，支持生产环境容器化一键部署</li>
+        <li>实现 Excel → JSONL 批量转换，兼容主流训练框架输入格式</li>
+        <li>实现 LLM-as-Judge 评测框架，自动化计算审校质量指标</li>
+      </ul>
+
+      <h2>效果截图</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/cover.png" alt="工具集导航首页">
+          <div class="screenshot-caption">工具集导航首页 — 4 个子工具一览</div>
+        </div>
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/pdf2text.png" alt="PDF 题目提取">
+          <div class="screenshot-caption">pdf2text — PDF 题目批量提取工具</div>
+        </div>
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/evaluation.png" alt="AI 审校评测">
+          <div class="screenshot-caption">evaluation — AI 审校指标评估工具</div>
+        </div>
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/excel_merger.png" alt="Excel 合并导出">
+          <div class="screenshot-caption">excel_merger — Excel 合并与 JSONL 训练数据导出</div>
+        </div>
+      </div>
+
+      <h2>相关链接</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub 主页</a>
+        <a href="README.md" class="btn btn-outline">查看 README</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.html">返回首页</a> · <a href="index.en.html">English</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

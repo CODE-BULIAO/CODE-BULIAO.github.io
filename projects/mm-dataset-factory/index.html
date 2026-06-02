@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多模态数据集工厂 · 项目详情</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 项目作品集</span>
+    <div class="nav-links">
+      <a href="../../index.html">首页</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">English</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">React 18 / Vite</span>
+        <span class="tag">TypeScript strict</span>
+        <span class="tag">SQLAlchemy async</span>
+        <span class="tag">SSE 实时推流</span>
+        <span class="tag green">多模态 · 数据工程</span>
+      </div>
+      <h1>🗂 多模态数据集工厂</h1>
+      <p class="sub">mm_dataset_factory — 从 Word/DOCX 一键产出错题图像数据集，4 阶段流水线 + SSE 实时推流 + Skill-as-contract 交付架构</p>
+    </section>
+
+    <section class="detail-content">
+
+      <div class="callout green" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px">
+        <span style="flex:1;min-width:240px"><strong style="display:inline">📄 完整技术文档（独立仓库）</strong>　系统架构、流水线内核、L1/L2/L3 错误体系、数据模型、SSE、API —— 中英双语，9 篇深入文档 + 截图。</span>
+        <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn" target="_blank" style="white-space:nowrap">前往文档仓库 →</a>
+      </div>
+
+      <h2>项目概览</h2>
+      <p>
+        面向多模态模型（LMM/VLM）训练数据生产场景，本系统从 Word/DOCX 试卷文档自动提取含图题目，
+        经过 4 个流水线阶段最终产出可直接用于训练的错题图像数据集：
+        JSON / JSONL / XLSX 标注文件 + 图片目录（zip 包）。
+        前后端分离架构，FastAPI 提供异步 REST API + SSE 实时推流，React/Vite 提供操作界面，
+        一条命令启动（<code>python run.py</code>）。
+      </p>
+      <div class="callout">
+        <strong>应用场景</strong> LMM / VLM 错题训练数据构建 · 多模态评测基准制作 · 图文对数据集生产流水线
+      </div>
+
+      <h2>技术栈</h2>
+      <div class="tag-list">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI（异步 REST + SSE）</span>
+        <span class="tag">SQLAlchemy 2.x async（ORM）</span>
+        <span class="tag">SQLite（持久化）</span>
+        <span class="tag">React 18</span>
+        <span class="tag">TypeScript strict（禁 any）</span>
+        <span class="tag">Vite（构建 + 开发代理）</span>
+        <span class="tag">VLM API（图像理解）</span>
+        <span class="tag">Text-to-Image API（图像生成）</span>
+        <span class="tag">python-docx / Pillow（文档 / 图像处理）</span>
+      </div>
+
+      <h2>4 阶段生产流水线</h2>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <span class="step-num">①</span>
+          <div class="step-name">paper-structuring</div>
+          <div class="step-desc">文档解析 · 含图题目提取</div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">②</span>
+          <div class="step-name">vlm-error-planning</div>
+          <div class="step-desc">VLM 错误规划 · L1/L2/L3 分级</div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">③</span>
+          <div class="step-name">text2image-generation</div>
+          <div class="step-desc">AI 图像生成 · 错图替换</div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">④</span>
+          <div class="step-name">quality-gate</div>
+          <div class="step-desc">质量审查 · 导出数据集</div>
+        </div>
+      </div>
+
+      <h2>架构</h2>
+      <div class="arch-box">┌─────────────────────────────────────────────────────────┐
+│                 前端层 (React 18 + Vite)                   │
+│  任务列表 / 样本浏览 / 规划详情 / 实时进度 / 数据集导出   │
+│  useTaskEvents() Hook ← SSE /api/events                   │
+└──────────────────────┬──────────────────────────────────┘
+                       │ HTTP  port 8000 (5173 → proxy)
+┌──────────────────────▼──────────────────────────────────┐
+│              FastAPI 主服务 (apps/api/)                    │
+│                                                          │
+│  /api/tasks/*     任务 CRUD + 阶段状态                    │
+│  /api/runs/*      执行流水线阶段                          │
+│  /api/samples/*   样本查询 / 筛选                         │
+│  /api/datasets/*  导出 JSON/JSONL/XLSX/zip               │
+│  /api/events      SSE 实时事件流                          │
+│  /api/settings    系统配置                               │
+│  /static/*        任务产物静态文件（StaticFiles 白名单）  │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│                  基础设施层                               │
+│  SQLAlchemy async + SQLite  (tasks / sample_states)      │
+│  asyncio EventBus           (SSE 进程内广播)              │
+│  文件系统 data/tasks/{task_id}/                           │
+│    images/ · extraction_debug/ · planning/ · generated/  │
+└─────────────────────────────────────────────────────────┘</div>
+
+      <h2>技术深度</h2>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">① 阶段一：文档结构化（paper-structuring）</h3>
+      <p>
+        读取 Word/DOCX 文档，以"小题"为粒度（一小题一条 Sample）提取内容。
+        规则：<strong>仅保留含图小题</strong>，无图小题跳过。
+        图片按题内重新编号（<code>img_01</code>、<code>img_02</code> …），
+        题目文本保留图占位符 <code>&lt;img_01&gt;</code> 形式，便于后续阶段追踪图文对应关系。
+        图片落盘到 <code>tasks/{task_id}/images/</code>，文件名格式 <code>q0001_img_01.png</code>。
+        同时生成调试产物：提取文本、imageMap JSON、原始图片备份。
+      </p>
+      <p>关键字段（Sample）：<code>sample_no</code> · <code>source_file</code> · <code>question_no</code> · <code>subject</code> · <code>question_type</code> · <code>question_text</code> · <code>image_count</code> · <code>image_map</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">② 阶段二：VLM 错误规划（vlm-error-planning）与 L1/L2/L3 三级错误体系</h3>
+      <p>调用 VLM API 分析每道含图题目，对每个样本固定输出 3 行规划（L1 / L2 / L3）：</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-title">L1 · 换图错配</div>
+          <div class="fc-desc">引用其他题目的图片，构造图文内容不一致的错题。不启用"生成后评估"闭环，直接换图。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title">L2 · 参数不匹配</div>
+          <div class="fc-desc">图可改，题图参数冲突（如长度与角度矛盾）。触发"生成后评估"闭环：VLM 校验数值锚点（numeric / symbolic / structural）一致性后决策 pass / repair / regenerate。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title">L3 · 逻辑无解</div>
+          <div class="fc-desc">图可改，题图组合无解。需附 <code>unsolvable_reason</code>。同样进入评估闭环，达到轮次上限转 <code>machine_reject</code>。</div>
+        </div>
+      </div>
+      <p>
+        <strong>文本补全（text_enrichment）机制</strong>：当 L2/L3 计划涉及"修改图中数值"但题文中缺失对应数值锚点时，
+        先执行受控文本补全并合并进该行导出的 <code>question_text</code>，再评估。
+        <em>不允许将补全任务下推给图像生成阶段口头声明</em>，确保数据一致性。
+      </p>
+      <p>规划产物：<code>planning/plan_eval_report.jsonl</code>（含 severity / decision / judge_trace）+ <code>questions_prompt_plan.xlsx/.jsonl</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">③ 阶段三：图像生成（text2image-generation）</h3>
+      <p>
+        以 <code>questions_prompt_plan.jsonl</code> 为输入，对每条 L2/L3 规划调用 Text-to-Image API 生成替换图片；
+        L1 直接在任务图片库内选图替换，不走生成 API。
+        生成结果落盘到 <code>tasks/{task_id}/generated/</code>，记录对应 sample_no + error_level。
+      </p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">④ SSE 进程内事件总线（asyncio EventBus）</h3>
+      <p>
+        每个流水线阶段的 runner 通过 <code>EventBus.publish(Event)</code> 广播进度事件，
+        SSE 路由 <code>/api/events</code> 为每个订阅客户端维护独立的 <code>asyncio.Queue</code>，
+        实现进程内零延迟广播。前端通过 <code>useTaskEvents()</code> Hook 订阅并自动重连，
+        实时展示每题的处理状态与进度数字。
+      </p>
+      <div class="arch-box">Runner ──publish()──→ EventBus._subscribers: set[asyncio.Queue]
+                                    └──→ Queue(client_1)  ──→ SSE /api/events
+                                    └──→ Queue(client_2)  ──→ SSE /api/events
+Frontend useTaskEvents() ←── EventSource → auto-reconnect + keepalive(15s)</div>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑤ 数据模型（SQLAlchemy async ORM）</h3>
+      <div class="arch-box">TaskORM                      SampleStateORM
+  task_id  (PK, str)          id          (PK, autoincrement)
+  title                       task_id     (FK → tasks)
+  current_stage               sample_no   (idx)
+  created_at                  stage       (paper-structuring / vlm-error-planning / …)
+  updated_at                  status      (idle / running / done / failed / machine_reject)
+  └── sample_states[]         updated_at
+      (cascade delete)        [UQ: task_id + sample_no + stage]</div>
+      <p>
+        阶段进度由前端聚合 <code>SampleState.status</code> 计算（total / done / failed / machine_reject），
+        无需额外进度表。所有 ORM 操作均通过 <code>async with session</code> 异步执行，保证吞吐。
+      </p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑥ SKILL.md 作为功能交付契约</h3>
+      <p>
+        每个功能模块对应一份 <code>SKILL.md</code>，严格定义：
+        支持动作（create_task / run_task / list_samples / export_dataset）、
+        输入字段约束、输出字段规范（success / data / errors / meta）、
+        阶段产物路径与格式。这使 AI Coding Agent 可以按契约验收功能，而非凭经验猜测接口行为。
+      </p>
+      <div class="callout callout green">
+        <strong>工程亮点</strong> deliverable（交付物）与 process（过程文档）严格目录隔离；TypeScript strict 模式全面禁 any；Python 类型注解完整 + from __future__ import annotations 保证向前兼容。
+      </div>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑦ 导出格式</h3>
+      <p>质量门控通过后，支持多格式导出：</p>
+      <ul>
+        <li><strong>JSON / JSONL</strong> — 标准多模态训练数据格式</li>
+        <li><strong>XLSX</strong> — 人工审核与修订</li>
+        <li><strong>images.zip</strong> — 所有生成图片打包</li>
+        <li>StaticFiles 白名单确保只有已知安全路径可通过 <code>/static/*</code> 访问</li>
+      </ul>
+
+      <h2>API 端点</h2>
+      <div class="arch-box">GET    /api/tasks              任务列表（含阶段进度聚合）
+POST   /api/tasks              新建任务（上传 Word 文档）
+GET    /api/tasks/{id}         任务详情 + artifacts URL
+POST   /api/runs/{id}/start    启动 / 继续流水线到指定阶段
+GET    /api/samples/{id}       分页查询样本
+GET    /api/samples/{id}/filter 按学科 / 题型 / 错误级别筛选
+GET    /api/datasets/{id}      导出数据集（JSON/JSONL/XLSX/zip）
+GET    /api/events             SSE 实时事件流
+GET    /api/settings           系统配置（LLM / 存储路径）
+GET    /health                 健康检查</div>
+
+      <h2>截图</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/task_list.png"
+               data-caption="任务列表 — 含真实数据（408 样本 / 19 样本批次）、阶段状态总览" alt="任务列表">
+          <div class="screenshot-caption">① 任务列表 — 含真实数据、阶段状态</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/structuring.png"
+               data-caption="结构化阶段 — 文档解析结果，含图题目按样本逐条展示（408 条）" alt="结构化">
+          <div class="screenshot-caption">② 结构化 — 文档解析，含图题目逐条展示</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/planning.png"
+               data-caption="VLM 错误规划阶段 — 左侧题目列表 + 右侧 L1/L2/L3 规划详情" alt="VLM 规划">
+          <div class="screenshot-caption">③ VLM 错误规划 — L1/L2/L3 三级规划</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/generation.png"
+               data-caption="生图阶段 — L1 换图 / L2·L3 AI 生成，支持逐张生成与批量跑批" alt="生图">
+          <div class="screenshot-caption">④ AI 生图 — L1 换图 / L2·L3 生成批跑</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/export.png"
+               data-caption="导出阶段 — 阶段产物文件列表，一键生成 xlsx/json/jsonl/images.zip" alt="导出">
+          <div class="screenshot-caption">⑤ 导出 — 产物列表 + 一键生成 zip</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/new_task.png"
+               data-caption="新建任务弹窗 — 上传 Word 文档、设定学科与题型默认值" alt="新建任务">
+          <div class="screenshot-caption">⑥ 新建任务 — 上传 Word、设定学科与题型</div>
+        </div>
+      </div>
+
+      <h2>核心亮点</h2>
+      <ul>
+        <li>4 阶段流水线覆盖从文档解析到数据集导出的全链路，支持按阶段重试</li>
+        <li>L1/L2/L3 三级错误规划体系 + "生成后评估"闭环，保证数据质量</li>
+        <li>asyncio EventBus + SSE 实时推流，前端零轮询展示逐题处理进度</li>
+        <li>SKILL.md 契约驱动开发，AI Agent 可按契约验收功能</li>
+        <li>SQLAlchemy async ORM + SQLite，全异步无阻塞</li>
+        <li>TypeScript strict 全面禁 any，Python 类型注解完整</li>
+      </ul>
+
+      <h2>相关链接</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn" target="_blank">📄 完整文档仓库（Markdown · 中英双语）</a>
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub 主页</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.html">返回首页</a> · <a href="index.en.html">English</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

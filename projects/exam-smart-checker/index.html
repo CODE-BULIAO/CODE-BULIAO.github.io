@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 智能试卷审校系统 · 项目详情</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 项目作品集</span>
+    <div class="nav-links">
+      <a href="../../index.html">首页</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">English</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">LangChain / LangGraph</span>
+        <span class="tag">ChromaDB</span>
+        <span class="tag">sentence-transformers</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Flask REST API</span>
+        <span class="tag green">NLP · LLM 应用落地</span>
+      </div>
+      <h1>📝 AI 智能试卷审校系统</h1>
+      <p class="sub">海云天 AI 智能试卷审校系统 — 基于 LLM + 向量检索的全自动试卷错误检测与三维度查重平台</p>
+    </section>
+
+    <section class="detail-content">
+
+      <h2>项目概览</h2>
+      <p>
+        面向教育机构命题场景，对试卷文档（DOC/DOCX/XLS/PDF）进行全自动解析与 AI 审校，涵盖 10 类错误检测与三维度向量查重，
+        最终输出结构化 Word / Excel 审校报告。系统同时提供 Streamlit 交互界面和 Flask REST API，
+        可独立使用也可作为批处理平台（<a href="../exam-checker-agent/index.html">exam_checker_agent</a>）的底层能力。
+      </p>
+      <div class="callout">
+        <strong>应用场景</strong>教育机构命题审核 · 出版社试卷校对 · 在线考试平台质量把关 · 多语言试题质检（中/日/德/法）
+      </div>
+
+      <h2>技术栈</h2>
+      <div class="tag-list">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">Streamlit（交互 UI）</span>
+        <span class="tag">Flask（REST API Server）</span>
+        <span class="tag">LangChain + LangGraph</span>
+        <span class="tag">ChromaDB（向量检索）</span>
+        <span class="tag">MySQL（题库持久化）</span>
+        <span class="tag">sentence-transformers</span>
+        <span class="tag">paraphrase-multilingual-MiniLM-L12-v2</span>
+        <span class="tag">PyMuPDF / pdfplumber</span>
+        <span class="tag">Qwen3 / dashscope</span>
+        <span class="tag">OpenAI-compatible API</span>
+        <span class="tag">Ollama（本地推理）</span>
+        <span class="tag">ChineseErrorCorrector3-4B</span>
+      </div>
+
+      <h2>整体架构</h2>
+      <div class="arch-box">┌──────────────────────────────────────────────────────────────┐
+│                     前端入口层                                │
+│   Streamlit (app.py)  ←────→  Flask API Server (api_server.py)│
+│   交互式审校 UI                REST /api/v1/* 供批处理调用    │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│             核心检测层  smart_checker/services/               │
+│                                                              │
+│  ┌──────────────────┐  ┌────────────────────┐               │
+│  │ 文档解析          │  │ 路由 + 检测引擎      │               │
+│  │ extractor/       │  │ detector/checkers/  │               │
+│  │ paper_parser.py  │  │ content.py          │               │
+│  │                  │  │ ┌──────────────┐   │               │
+│  │ 骨架提取 (LLM)   │  │ │ LangGraph    │   │               │
+│  │ + 并发内容填充    │  │ │ 按题型路由    │   │               │
+│  └──────────────────┘  │ └──────────────┘   │               │
+│                        └────────────────────┘               │
+│  ┌──────────────────────────────────────────┐               │
+│  │ 向量查重层  detector/checkers/duplicate.py │               │
+│  │  内部查重 │ 跨题库查重 │ 历史题库查重        │               │
+│  └──────────────────────────────────────────┘               │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│                   基础设施层                                   │
+│  LLM 适配  (Qwen3 / OpenAI / Ollama)                         │
+│  纠错模型  (ChineseErrorCorrector3-4B, 本地)                  │
+│  向量存储  ChromaDB    关系存储  MySQL                         │
+└──────────────────────────────────────────────────────────────┘</div>
+
+      <h2>核心技术详解</h2>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">① 骨架提取 + 并发内容填充（解析加速）</h3>
+      <p>
+        文档解析分两步：第一步 LLM 提取"骨架"（题号、大题标题、结构层级），生成嵌套 JSON 树；
+        第二步多线程（默认 5 workers）并发填充每个节点的正文内容，最终扁平化为带有
+        <code>major_number / middle_number / minor_number / numbering_path</code> 的 Question 列表。
+        相比单线程串行解析，对 100 题试卷的处理耗时下降约 60%。
+      </p>
+      <p>核心实现：<code>smart_checker/services/extractor/paper_parser.py</code> → <code>PaperTextExtractor.convert_paper_to_questions()</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">② LangGraph 题型路由（减少误报）</h3>
+      <p>
+        路由阶段通过 LLM 分析题目类型、科目、格式，生成 <code>detection_flags</code> 字典，
+        决定当前题目需要运行哪些检测任务（如选择题不需要跑"答案泄露"检测，数学题需要额外的"无解性"检测）。
+        若路由返回为空则回退到全量检测。这一机制将无效检测调用减少约 40%，同时降低误报率。
+      </p>
+      <p>核心实现：<code>smart_checker/services/detector/checkers/content.py</code> → <code>_label_question_for_routing()</code> / <code>_build_detection_tasks()</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">③ 双模型解耦：main_model + corrector_model</h3>
+      <p>
+        主检测模型（<code>main_model</code>，如 <code>qwen3.6-max-preview</code> 云端）负责全量错误检测与路由分析；
+        纠错模型（<code>corrector_model</code>，如本地 <code>ChineseErrorCorrector3-4B</code>）专项负责中文错别字的深度纠错。
+        两者可独立配置，支持三种协作模式：① 仅主模型；② Union 模式（主模型 + 纠错模型结果合并）；
+        ③ Diff-only 模式（仅展示纠错模型发现的增量错误）。
+      </p>
+      <p>核心实现：<code>config/domains/llm.py:LLMSettings</code> / <code>smart_checker/infrastructure/llm/model_manager.py:ModelManager</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">④ 三维度向量查重</h3>
+      <p>
+        使用 <code>paraphrase-multilingual-MiniLM-L12-v2</code> 本地嵌入模型对题目文本向量化，存入 ChromaDB。
+        三个维度：
+      </p>
+      <ul>
+        <li><strong>内部查重</strong>（<code>check_internal_duplicates()</code>）：同套卷内题目两两比对余弦相似度</li>
+        <li><strong>跨题库查重</strong>（<code>CrossPaperDuplicateChecker.check_cross_paper_duplicates()</code>）：与其他学科/年级题库比对</li>
+        <li><strong>历史题库查重</strong>（<code>check_historical_duplicates()</code>）：与历年积累的历史题库比对</li>
+      </ul>
+      <p>默认相似度阈值 <strong>0.85</strong>（可调），完全相同阈值 <strong>0.98</strong>；结果附带 confidence 分数。</p>
+      <p>核心实现：<code>smart_checker/services/detector/checkers/duplicate.py</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑤ 10 类错误检测 + CoT 支持</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="fc-title">错别字 <code>typo_check</code></div><div class="fc-desc">LLM + ChineseErrorCorrector 双重检测，Union / Diff-only 两种合并策略</div></div>
+        <div class="feature-card"><div class="fc-title">语义不清 <code>ambiguity_check</code></div><div class="fc-desc">检测题干表述模糊、多义或指代不清问题</div></div>
+        <div class="feature-card"><div class="fc-title">选项错误 <code>options_check</code></div><div class="fc-desc">选项格式一致性、互斥性、干扰项合理性</div></div>
+        <div class="feature-card"><div class="fc-title">标点符号 <code>punctuation_check</code></div><div class="fc-desc">中文/日文/德文标点规范性检测</div></div>
+        <div class="feature-card"><div class="fc-title">题型不一致 <code>mismatch_check</code></div><div class="fc-desc">题目类型声明与实际内容不符</div></div>
+        <div class="feature-card"><div class="fc-title">信息缺失 <code>missing_check</code></div><div class="fc-desc">图表引用缺失、条件不足等</div></div>
+        <div class="feature-card"><div class="fc-title">题目无解 <code>unsolvability_check</code></div><div class="fc-desc">数学/逻辑题无解或矛盾条件检测</div></div>
+        <div class="feature-card"><div class="fc-title">答案泄露 <code>answer_leak_check</code></div><div class="fc-desc">题干或选项中隐含正确答案</div></div>
+        <div class="feature-card"><div class="fc-title">图文不一致 <code>image_inconsistency_check</code></div><div class="fc-desc">图像描述与题干文字矛盾</div></div>
+        <div class="feature-card"><div class="fc-title">逻辑错误 <code>logic_check</code></div><div class="fc-desc">推理链、前提与结论逻辑矛盾</div></div>
+      </div>
+      <p>所有检测任务支持 <strong>CoT（Chain-of-Thought）</strong> 模式，通过 <code>enable_thinking</code> 开关启用，对应 thinking/non-thinking 两套参数配置（temperature, top_p 等）。</p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑥ 多语言支持（中/日/德/法）</h3>
+      <p>
+        系统自动检测试卷语言，按语言加载对应 prompt 模板目录（<code>assets/prompt/detection/{ja,de,fr}/</code>）
+        和路由 prompt（<code>assets/prompt/routing/{zh,ja,de}/question_routing.txt</code>）。
+        四种语言共享同一套检测框架，日/德/法各有专用的拼写与语法检测任务。
+      </p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑦ Flask REST API（供批处理平台复用）</h3>
+      <div class="arch-box">POST /api/v1/parse_paper       — 文档结构化解析（骨架提取 + 并发填充）
+POST /api/v1/get_routing        — 获取单题检测路由 flags
+POST /api/v1/detect             — 单题错误检测（支持指定 detection_types）
+POST /api/v1/duplicate/internal — 内部查重
+POST /api/v1/duplicate/cross    — 跨题库查重
+POST /api/v1/duplicate/history  — 历史题库查重
+GET  /api/v1/tasks              — 获取所有可用检测任务定义
+GET  /health                    — 服务健康检查</div>
+      <p>API 通过 <code>api_request_model_scope</code> 上下文管理器实现并发请求间的模型作用域隔离，支持每请求指定不同 main_model。</p>
+
+      <h2>配置系统</h2>
+      <div class="callout green">
+        <strong>优先级：环境变量 &gt; llm_config.yaml &gt; 代码默认值</strong>
+        <code>config/</code> 目录下按领域拆分：<code>domains/llm.py</code>（模型参数）、<code>domains/features.py</code>（功能开关）、
+        <code>detection_tasks.py</code>（检测任务声明）、<code>unified_error_types.py</code>（UI 错误类型聚合）。
+        支持三种部署模式：<code>cloud / private / test</code>，通过 <code>SMART_CHECKER_DEPLOY_MODE</code> 环境变量切换。
+      </div>
+
+      <h2>效果截图</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_smart_checker/cover.png"
+               data-caption="主界面：试卷上传（新试卷 + 历史题库）与审校结果区域" alt="主界面">
+          <div class="screenshot-caption">主界面：试卷上传 + 审校结果面板</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_smart_checker/settings_modal.png"
+               data-caption="审校参数配置弹窗：查重相似度阈值、双模型配置、CoT 开关、大模型选择" alt="参数配置">
+          <div class="screenshot-caption">审校参数配置：双模型、相似度阈值、CoT 开关</div>
+        </div>
+      </div>
+
+      <h2>亮点总结</h2>
+      <ul>
+        <li>LangGraph 题型路由将无效 LLM 调用减少约 40%，降低误报率</li>
+        <li>骨架提取 + 5 线程并发填充，100 题解析耗时较串行下降 ~60%</li>
+        <li>双模型 Union/Diff-only 模式提升中文错别字召回率</li>
+        <li>多语言（中/日/德/法）共用一套框架，通过 prompt 模板目录切换</li>
+        <li>Flask API 暴露全套能力，被生产级批处理平台 exam_checker_agent 直接复用</li>
+      </ul>
+
+      <h2>相关链接</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub 主页</a>
+        <a href="../exam-checker-agent/index.html" class="btn btn-outline">→ 生产级批处理版本</a>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.html">返回首页</a> · <a href="index.en.html">English</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

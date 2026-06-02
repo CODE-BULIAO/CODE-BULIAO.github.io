@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Checker Agent Platform · Project Detail</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 Portfolio</span>
+    <div class="nav-links">
+      <a href="../../index.en.html">Home</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">中文</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.en.html" class="back-link">← Back to Home</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">React</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">Flask</span>
+        <span class="tag">SQLite</span>
+        <span class="tag">Docker</span>
+        <span class="tag green">Full-Stack · Production</span>
+      </div>
+      <h1>⚙️ Exam Checker Agent Platform</h1>
+      <p class="sub">exam_checker_agent — Production batch-processing platform with 5-step state machine, multi-tenant isolation and dual web-framework fusion</p>
+    </section>
+
+    <section class="detail-content">
+
+      <h2>Overview</h2>
+      <p>
+        A production-grade rewrite of <code>exam_smart_checker</code>, upgrading the single-user Streamlit tool
+        into a multi-user concurrent web platform with batch task management, a 5-step automated review
+        pipeline, and result download capabilities.
+      </p>
+      <div class="info-box">
+        <strong>Use Cases:</strong> Multi-institution concurrent review, background batch task management, SaaS deployment
+      </div>
+
+      <h2>Tech Stack</h2>
+      <div class="tag-list">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI (primary API)</span>
+        <span class="tag">Flask (legacy WSGI, in-process)</span>
+        <span class="tag">React + Vite (frontend)</span>
+        <span class="tag">SQLite (task persistence)</span>
+        <span class="tag">Docker + Dockerfile</span>
+        <span class="tag">Multilingual LLM detection</span>
+      </div>
+
+      <h2>Architecture</h2>
+      <div class="arch-box">┌─────────────────────────────────────────────────────┐
+│               Frontend (React + Vite)                 │
+│   Batch mgmt / Task list / Results / File download   │
+└────────────────────┬────────────────────────────────┘
+                     │ HTTP  port 8777
+┌────────────────────▼────────────────────────────────┐
+│             FastAPI Main Service (backend/main.py)    │
+│   /api/v2/*  →  FastAPI routers                      │
+│   /api/v1/*  →  LegacySmartCheckerService.dispatch() │
+│               (in-process Flask WSGI bridge)          │
+└──────┬─────────────────────────┬────────────────────┘
+       │                         │
+┌──────▼──────┐         ┌────────▼──────────┐
+│ Task State  │         │  Flask API Server  │
+│  Machine    │         │  (api_server.py)   │
+│  parse      │         │  ~1356 lines       │
+│  → review   │         └───────────────────┘
+│  → int_plag │
+│  → crs_plag │
+│  → his_plag │
+└─────────────┘</div>
+
+      <ul>
+        <li><code>backend/app/routers/</code> — FastAPI routing layer</li>
+        <li><code>backend/app/services/</code> — business logic layer</li>
+        <li><code>backend/app/repositories/</code> — data access layer (SQLite)</li>
+        <li><code>backend/app/domain/</code> — task state machine definition</li>
+        <li><code>backend/api_server.py</code> — legacy Flask service (WSGI in-process)</li>
+        <li><code>frontend/</code> — React frontend</li>
+        <li><code>run.py</code> — unified entry point, port 8777</li>
+        <li><code>Dockerfile</code> / <code>deploy.sh</code></li>
+      </ul>
+
+      <h2>Core Algorithms / Key Design</h2>
+
+      <p><strong>1. Dual Web Framework WSGI In-Process Fusion</strong></p>
+      <p>
+        FastAPI serves as the primary server. <code>LegacySmartCheckerService.dispatch()</code> routes
+        <code>/api/v1/*</code> to the Flask WSGI app in-process, achieving a smooth migration that preserves
+        legacy capabilities with zero extra network hops.
+      </p>
+
+      <p><strong>2. 5-Step Task State Machine</strong></p>
+      <p>
+        Each review task progresses through five serial stages:
+        <code>parse → review → internal_plag → cross_plag → history_plag</code>.
+        Optimistic locking prevents concurrent conflicts. A heartbeat mechanism automatically detects
+        and recovers stale tasks (running tasks that miss heartbeat deadlines).
+      </p>
+
+      <p><strong>3. AppRuntime Dependency Injection Container</strong></p>
+      <p>
+        A unified <code>AppRuntime</code> singleton manages the lifecycle of all service instances.
+        FastAPI's DI system retrieves Repositories, Services etc. through it, eliminating global state.
+      </p>
+
+      <p><strong>4. X-Client-Id Multi-Tenant Isolation</strong></p>
+      <p>
+        Every request carries a <code>X-Client-Id</code> header. Task queries and result reads are scoped
+        to the corresponding client owner, preventing cross-institution data leakage.
+      </p>
+
+      <p><strong>5. Dynamic Multilingual Prompt Selection</strong></p>
+      <p>
+        A language detection module identifies the exam language (zh/ja/de/fr) and dynamically loads
+        the corresponding LLM review prompt, enabling multilingual support within a single system.
+      </p>
+
+      <h2>Innovations / My Contributions</h2>
+      <ul>
+        <li>Designed the overall batch platform architecture (FastAPI + SQLite + React full-stack)</li>
+        <li>Implemented the FastAPI ↔ Flask WSGI in-process bridge, preserving legacy capabilities at zero migration cost</li>
+        <li>Designed the 5-step task state machine with optimistic locking and heartbeat zombie recovery</li>
+        <li>Built the <code>AppRuntime</code> DI container for unified service lifecycle management</li>
+        <li>Implemented <code>X-Client-Id</code> per-client data isolation</li>
+        <li>Wrote Docker image and one-command deployment scripts</li>
+      </ul>
+
+      <h2>Screenshots</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_checker_agent/cover.png"
+               data-caption="New batch task — upload exam file, 4-step wizard to configure detection parameters" alt="New batch task">
+          <div class="screenshot-caption">New batch task — upload exam, 4-step wizard</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_checker_agent/dashboard.png"
+               data-caption="Task dashboard — batch progress, 5-step pipeline status, result download" alt="Task dashboard">
+          <div class="screenshot-caption">Task dashboard — batch progress and pipeline status</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_checker_agent/case_library.png"
+               data-caption="Few-shot case library — Excel import, vector embedding cache, per-task-type management" alt="Case library">
+          <div class="screenshot-caption">Few-shot case library — Excel import, embedding cache</div>
+        </div>
+      </div>
+
+      <h2>Links</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub Profile</a>
+        <a href="README.md" class="btn btn-outline">View README</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.en.html">Home</a> · <a href="index.html">中文</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

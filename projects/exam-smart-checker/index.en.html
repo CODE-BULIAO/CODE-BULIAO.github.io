@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Exam Smart Checker · Project Detail</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 Portfolio</span>
+    <div class="nav-links">
+      <a href="../../index.en.html">Home</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">中文</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.en.html" class="back-link">← Back to Home</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">LangChain / LangGraph</span>
+        <span class="tag">ChromaDB</span>
+        <span class="tag">sentence-transformers</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Flask REST API</span>
+        <span class="tag green">NLP · LLM Application</span>
+      </div>
+      <h1>📝 AI Exam Smart Checker</h1>
+      <p class="sub">LLM + vector-search platform for fully automated exam paper error detection and 3-dimension plagiarism checking</p>
+    </section>
+
+    <section class="detail-content">
+
+      <h2>Overview</h2>
+      <p>
+        Targeting educational institution exam authoring workflows, the system automatically parses exam documents (DOC/DOCX/XLS/PDF),
+        runs AI-powered checks across 10 error categories, and performs 3-dimension vector-based plagiarism detection.
+        Outputs structured Word/Excel review reports. Exposes both a Streamlit UI and a Flask REST API,
+        enabling use as a standalone tool or as the detection engine for the batch platform
+        (<a href="../exam-checker-agent/index.en.html">exam_checker_agent</a>).
+      </p>
+      <div class="callout">
+        <strong>Use Cases</strong> Educational institution exam review · Publisher proofreading · Online exam quality control · Multilingual QA (zh/ja/de/fr)
+      </div>
+
+      <h2>Tech Stack</h2>
+      <div class="tag-list">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">Streamlit (UI)</span>
+        <span class="tag">Flask (REST API Server)</span>
+        <span class="tag">LangChain + LangGraph</span>
+        <span class="tag">ChromaDB (vector search)</span>
+        <span class="tag">MySQL (question bank)</span>
+        <span class="tag">sentence-transformers</span>
+        <span class="tag">paraphrase-multilingual-MiniLM-L12-v2</span>
+        <span class="tag">PyMuPDF / pdfplumber</span>
+        <span class="tag">Qwen3 / dashscope</span>
+        <span class="tag">OpenAI-compatible API</span>
+        <span class="tag">Ollama (local inference)</span>
+        <span class="tag">ChineseErrorCorrector3-4B</span>
+      </div>
+
+      <h2>Architecture</h2>
+      <div class="arch-box">┌──────────────────────────────────────────────────────────────┐
+│                     Frontend Layer                           │
+│   Streamlit (app.py)  ←────→  Flask API Server (api_server) │
+│   Interactive review UI        REST /api/v1/* for batch use  │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│           Core Detection Layer  smart_checker/services/      │
+│                                                              │
+│  ┌──────────────────┐  ┌────────────────────┐               │
+│  │ Document Parser  │  │ Router + Detectors  │               │
+│  │ extractor/       │  │ detector/checkers/  │               │
+│  │ paper_parser.py  │  │ content.py          │               │
+│  │                  │  │ ┌──────────────┐   │               │
+│  │ Skeleton (LLM)   │  │ │ LangGraph    │   │               │
+│  │ + concurrent fill│  │ │ type routing  │   │               │
+│  └──────────────────┘  │ └──────────────┘   │               │
+│                        └────────────────────┘               │
+│  ┌──────────────────────────────────────────┐               │
+│  │  Vector Dedup  detector/checkers/         │               │
+│  │  duplicate.py                            │               │
+│  │  Internal │ Cross-bank │ Historical       │               │
+│  └──────────────────────────────────────────┘               │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│                   Infrastructure Layer                       │
+│  LLM Adapter (Qwen3 / OpenAI / Ollama)                       │
+│  Corrector Model (ChineseErrorCorrector3-4B, local)          │
+│  Vector Store: ChromaDB    Relational: MySQL                 │
+└──────────────────────────────────────────────────────────────┘</div>
+
+      <h2>Technical Deep-Dive</h2>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">① Skeleton Extraction + Concurrent Content Fill (parser acceleration)</h3>
+      <p>
+        Document parsing runs in two phases: phase 1 — LLM extracts a "skeleton" (question IDs, headings, structural hierarchy)
+        as a nested JSON tree; phase 2 — multi-threaded (5 workers) concurrent fill of each node's content,
+        finally flattened into a Question list with <code>major_number / middle_number / minor_number / numbering_path</code> metadata.
+        For a 100-question paper this reduces end-to-end parsing latency by ~60% vs. serial processing.
+      </p>
+      <p>Key code: <code>smart_checker/services/extractor/paper_parser.py</code> → <code>PaperTextExtractor.convert_paper_to_questions()</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">② LangGraph Question-Type Router (reduces false positives)</h3>
+      <p>
+        The routing stage calls an LLM to analyze question type, subject and format, then produces a <code>detection_flags</code>
+        dict that gates which detection tasks run on this question (e.g. MCQs skip "answer leak" check; math questions
+        get "unsolvability" check). Falls back to full detection if routing returns empty. This eliminates ~40% of
+        unnecessary LLM calls and reduces false-positive rates.
+      </p>
+      <p>Key code: <code>smart_checker/services/detector/checkers/content.py</code> → <code>_label_question_for_routing()</code> / <code>_build_detection_tasks()</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">③ Dual-Model Decoupling: main_model + corrector_model</h3>
+      <p>
+        The primary model (<code>main_model</code>, e.g. <code>qwen3.6-max-preview</code> cloud) handles full detection and routing;
+        the corrector model (<code>corrector_model</code>, e.g. local <code>ChineseErrorCorrector3-4B</code>) specializes in deep Chinese
+        typo correction. Three collaboration modes: ① main model only; ② Union mode (merge both results);
+        ③ Diff-only mode (show only corrector-exclusive findings).
+      </p>
+      <p>Key code: <code>config/domains/llm.py:LLMSettings</code> / <code>smart_checker/infrastructure/llm/model_manager.py:ModelManager</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">④ 3-Dimension Vector Deduplication</h3>
+      <p>
+        Uses the local <code>paraphrase-multilingual-MiniLM-L12-v2</code> embedding model to vectorize questions and store
+        them in ChromaDB. Three dedup dimensions:
+      </p>
+      <ul>
+        <li><strong>Internal</strong> (<code>check_internal_duplicates()</code>): pairwise cosine similarity within the same paper</li>
+        <li><strong>Cross-bank</strong> (<code>CrossPaperDuplicateChecker</code>): comparison against other subject/grade question banks</li>
+        <li><strong>Historical</strong> (<code>check_historical_duplicates()</code>): comparison against accumulated historical question banks</li>
+      </ul>
+      <p>Default similarity threshold <strong>0.85</strong> (configurable); identical threshold <strong>0.98</strong>. Results include a confidence score field.</p>
+      <p>Key code: <code>smart_checker/services/detector/checkers/duplicate.py</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑤ 10 Error Categories + CoT Support</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="fc-title">Typo <code>typo_check</code></div><div class="fc-desc">LLM + ChineseErrorCorrector dual detection with Union/Diff-only merge strategies</div></div>
+        <div class="feature-card"><div class="fc-title">Ambiguity <code>ambiguity_check</code></div><div class="fc-desc">Detects vague wording, polysemy, or unclear references</div></div>
+        <div class="feature-card"><div class="fc-title">Option errors <code>options_check</code></div><div class="fc-desc">Option format consistency, mutual exclusivity, distractor quality</div></div>
+        <div class="feature-card"><div class="fc-title">Punctuation <code>punctuation_check</code></div><div class="fc-desc">Chinese/Japanese/German punctuation convention checks</div></div>
+        <div class="feature-card"><div class="fc-title">Type mismatch <code>mismatch_check</code></div><div class="fc-desc">Declared question type vs. actual content mismatch</div></div>
+        <div class="feature-card"><div class="fc-title">Missing info <code>missing_check</code></div><div class="fc-desc">Missing figure references, insufficient conditions</div></div>
+        <div class="feature-card"><div class="fc-title">Unsolvable <code>unsolvability_check</code></div><div class="fc-desc">Math/logic questions with no solution or contradictory conditions</div></div>
+        <div class="feature-card"><div class="fc-title">Answer leak <code>answer_leak_check</code></div><div class="fc-desc">Correct answer implied in the stem or options</div></div>
+        <div class="feature-card"><div class="fc-title">Image mismatch <code>image_inconsistency_check</code></div><div class="fc-desc">Contradiction between image description and question text</div></div>
+        <div class="feature-card"><div class="fc-title">Logic error <code>logic_check</code></div><div class="fc-desc">Inference chain, premise-conclusion logical contradictions</div></div>
+      </div>
+      <p>All detection tasks support <strong>Chain-of-Thought (CoT)</strong> mode via the <code>enable_thinking</code> flag, with separate thinking/non-thinking parameter sets (temperature, top_p, etc.).</p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑥ Multilingual Support (zh/ja/de/fr)</h3>
+      <p>
+        The system auto-detects the exam language and loads the corresponding prompt template directory
+        (<code>assets/prompt/detection/{ja,de,fr}/</code>) and routing prompt (<code>assets/prompt/routing/{zh,ja,de}/question_routing.txt</code>).
+        All four languages share the same detection framework; ja/de/fr each have dedicated spelling and grammar tasks.
+      </p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑦ Flask REST API (reused by batch platform)</h3>
+      <div class="arch-box">POST /api/v1/parse_paper       — Document structured parsing (skeleton + concurrent fill)
+POST /api/v1/get_routing        — Get detection routing flags for one question
+POST /api/v1/detect             — Run error detection on one question
+POST /api/v1/duplicate/internal — Internal plagiarism check
+POST /api/v1/duplicate/cross    — Cross-bank plagiarism check
+POST /api/v1/duplicate/history  — Historical bank plagiarism check
+GET  /api/v1/tasks              — Get all available detection task definitions
+GET  /health                    — Service health check</div>
+
+      <h2>Screenshots</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_smart_checker/cover.png"
+               data-caption="Main UI: paper upload (new paper + historical bank) and review results panel" alt="Main UI">
+          <div class="screenshot-caption">Main UI: paper upload + review results panel</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_smart_checker/settings_modal.png"
+               data-caption="Review parameter config: dedup similarity threshold, dual-model setup, CoT toggle, LLM selection" alt="Settings modal">
+          <div class="screenshot-caption">Parameter config: dual-model, similarity threshold, CoT toggle</div>
+        </div>
+      </div>
+
+      <h2>Key Highlights</h2>
+      <ul>
+        <li>LangGraph type-aware routing eliminates ~40% of redundant LLM calls and reduces false positives</li>
+        <li>Skeleton + 5-thread concurrent fill reduces 100-question parsing latency by ~60%</li>
+        <li>Dual-model Union/Diff-only modes improve Chinese typo recall</li>
+        <li>4-language support (zh/ja/de/fr) via a single framework with prompt-template directories</li>
+        <li>Flask API exposes full capabilities; reused directly by the production batch platform</li>
+      </ul>
+
+      <h2>Links</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub Profile</a>
+        <a href="../exam-checker-agent/index.en.html" class="btn btn-outline">→ Production Batch Platform</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.en.html">Home</a> · <a href="index.html">中文</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#161b22"/>
+  <rect x="160" y="70" width="80" height="60" rx="8" fill="none" stroke="#30363d" stroke-width="2"/>
+  <circle cx="185" cy="88" r="8" fill="none" stroke="#30363d" stroke-width="2"/>
+  <polyline points="160,130 185,105 210,118 240,95 280,130" fill="none" stroke="#30363d" stroke-width="2"/>
+  <text x="200" y="165" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#484f58">截图待补充 / Screenshot pending</text>
+</svg>

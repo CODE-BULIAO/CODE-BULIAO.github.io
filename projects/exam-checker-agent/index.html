@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>试卷审校批处理平台 · 项目详情</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 项目作品集</span>
+    <div class="nav-links">
+      <a href="../../index.html">首页</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">English</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">React</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">Flask</span>
+        <span class="tag">SQLite</span>
+        <span class="tag">Docker</span>
+        <span class="tag green">全栈 · 生产级</span>
+      </div>
+      <h1>⚙️ 试卷审校批处理平台</h1>
+      <p class="sub">exam_checker_agent — 生产级批处理重构版本，5 步状态机 + 多租户隔离 + 双 Web 框架融合</p>
+    </section>
+
+    <section class="detail-content">
+
+      <h2>项目概览</h2>
+      <p>
+        本项目是 <code>exam_smart_checker</code> 的生产级重构版本，将单机 Streamlit 工具升级为支持多用户并发、
+        任务批量管理的 Web 平台。核心能力：试卷批次管理、任务调度、5 步自动化审校流水线、结果下载。
+      </p>
+      <div class="info-box">
+        <strong>应用场景：</strong>多机构并发审校、后台批量任务管理、SaaS 化部署
+      </div>
+
+      <h2>技术栈</h2>
+      <div class="tag-list">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI（主 API）</span>
+        <span class="tag">Flask（遗留 WSGI，in-process）</span>
+        <span class="tag">React + Vite（前端）</span>
+        <span class="tag">SQLite（任务持久化）</span>
+        <span class="tag">Docker + Dockerfile</span>
+        <span class="tag">LLM 多语言检测</span>
+      </div>
+
+      <h2>架构与模块结构</h2>
+      <div class="arch-box">┌─────────────────────────────────────────────────────┐
+│               前端层 (React + Vite)                   │
+│   批次管理 / 任务列表 / 结果查看 / 文件下载           │
+└────────────────────┬────────────────────────────────┘
+                     │ HTTP  port 8777
+┌────────────────────▼────────────────────────────────┐
+│             FastAPI 主服务 (backend/main.py)          │
+│   /api/v2/*  →  FastAPI routers                      │
+│   /api/v1/*  →  LegacySmartCheckerService.dispatch() │
+│               (in-process Flask WSGI bridge)          │
+└──────┬─────────────────────────┬────────────────────┘
+       │                         │
+┌──────▼──────┐         ┌────────▼──────────┐
+│ 任务状态机  │         │  Flask API Server  │
+│  parse      │         │  (api_server.py)   │
+│  → review   │         │  ~1356 lines       │
+│  → int_plag │         └───────────────────┘
+│  → crs_plag │
+│  → his_plag │
+└─────────────┘</div>
+
+      <p>核心目录：</p>
+      <ul>
+        <li><code>backend/app/routers/</code> — FastAPI 路由层</li>
+        <li><code>backend/app/services/</code> — 业务逻辑服务层</li>
+        <li><code>backend/app/repositories/</code> — 数据访问层（SQLite）</li>
+        <li><code>backend/app/domain/</code> — 任务状态机定义</li>
+        <li><code>backend/api_server.py</code> — 遗留 Flask 服务（WSGI in-process）</li>
+        <li><code>frontend/</code> — React 前端</li>
+        <li><code>run.py</code> — 统一启动入口，port 8777</li>
+        <li><code>Dockerfile</code> / <code>deploy.sh</code></li>
+      </ul>
+
+      <h2>核心算法 / 关键设计</h2>
+
+      <p><strong>1. 双 Web 框架 WSGI In-Process 融合</strong></p>
+      <p>
+        FastAPI 作为主服务，通过 <code>LegacySmartCheckerService.dispatch()</code> 将
+        <code>/api/v1/*</code> 路由在进程内转发给 Flask WSGI 应用处理，
+        实现在不重写遗留逻辑的前提下完成平滑迁移，零额外网络跳跃。
+      </p>
+
+      <p><strong>2. 5 步任务状态机</strong></p>
+      <p>
+        每个审校任务经历 5 个串行阶段：
+        <code>parse → review → internal_plag → cross_plag → history_plag</code>，
+        每步完成后更新状态，支持断点恢复。状态机使用乐观锁防止并发竞争，
+        心跳机制自动检测并恢复僵尸任务（超时未心跳的运行中任务）。
+      </p>
+
+      <p><strong>3. AppRuntime 依赖注入容器</strong></p>
+      <p>
+        统一的 <code>AppRuntime</code> 单例管理所有服务实例的生命周期，
+        FastAPI 依赖注入系统通过它获取 Repository、Service 等组件，避免全局变量。
+      </p>
+
+      <p><strong>4. X-Client-Id 多租户隔离</strong></p>
+      <p>
+        每个请求通过 Header <code>X-Client-Id</code> 携带客户端标识，
+        任务查询、结果读取均在对应客户端 owner 范围内隔离，
+        防止多机构数据交叉。
+      </p>
+
+      <p><strong>5. 多语言检测提示词动态选择</strong></p>
+      <p>
+        语言检测模块识别试卷语言（中/日/德/法），动态加载对应的 LLM 审校提示词，
+        实现同一套系统的多语言适配。
+      </p>
+
+      <h2>创新点 / 我做了什么</h2>
+      <ul>
+        <li>设计整体批处理平台架构（FastAPI + SQLite + React 全栈）</li>
+        <li>实现 FastAPI ↔ Flask WSGI in-process 融合方案，保留遗留能力零迁移成本</li>
+        <li>设计 5 步任务状态机 + 乐观锁 + 心跳僵尸恢复机制</li>
+        <li>构建 <code>AppRuntime</code> DI 容器，统一管理服务生命周期</li>
+        <li>实现 <code>X-Client-Id</code> per-client 数据隔离</li>
+        <li>编写 Docker 镜像与一键部署脚本</li>
+      </ul>
+
+      <h2>效果截图</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_checker_agent/cover.png"
+               data-caption="新建跑批任务 — 上传试卷文件、4 步向导配置检测参数" alt="新建批次任务">
+          <div class="screenshot-caption">新建跑批任务 — 上传试卷、4 步向导配置</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_checker_agent/dashboard.png"
+               data-caption="任务仪表板 — 批次进度、5 步流水线状态、结果下载" alt="任务仪表板">
+          <div class="screenshot-caption">任务仪表板 — 批次进度与流水线状态</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/exam_checker_agent/case_library.png"
+               data-caption="Few-shot 案例库 — Excel 导入、向量嵌入缓存、按题型分类管理" alt="案例库">
+          <div class="screenshot-caption">Few-shot 案例库 — Excel 导入、嵌入缓存、题型分类</div>
+        </div>
+      </div>
+
+      <h2>相关链接</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub 主页</a>
+        <a href="README.md" class="btn btn-outline">查看 README</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.html">返回首页</a> · <a href="index.en.html">English</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

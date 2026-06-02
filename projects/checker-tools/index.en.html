@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checker Auxiliary Toolkit · Project Detail</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 Portfolio</span>
+    <div class="nav-links">
+      <a href="../../index.en.html">Home</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">中文</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.en.html" class="back-link">← Back to Home</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Docker Compose</span>
+        <span class="tag green">Data Engineering · Toolkit</span>
+      </div>
+      <h1>🧰 Checker Auxiliary Toolkit</h1>
+      <p class="sub">checker_tools — 4-in-1 Streamlit toolbox covering the full pipeline: data ingestion → bad-case generation → model evaluation → training export</p>
+    </section>
+
+    <section class="detail-content">
+
+      <h2>Overview</h2>
+      <p>
+        A data engineering companion to <code>exam_smart_checker</code> / <code>exam_checker_agent</code>,
+        packaging the four most common data pipeline operations into independently accessible Streamlit web tools.
+        Launch all at once via a unified script; Docker Compose ready for production.
+      </p>
+      <div class="info-box">
+        <strong>Use Cases:</strong> Data preparation, quality evaluation, and training set construction for AI review systems
+      </div>
+
+      <h2>4 Sub-tools</h2>
+
+      <div class="grid" style="margin-bottom:24px">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">📄 pdf2text</div>
+            <p style="font-size:.85rem;color:var(--muted)">Port 8302</p>
+            <div class="card-desc">Extracts question text from PDF exam papers, handling multi-column and mixed image/text layouts. Outputs structured JSON/JSONL.</div>
+            <div class="tag-list"><span class="tag">PyMuPDF</span><span class="tag">pdfplumber</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">🔬 process_badcase</div>
+            <p style="font-size:.85rem;color:var(--muted)">Port 8303</p>
+            <div class="card-desc">Bad-case factory: organizes, classifies and annotates error cases from review results to generate alignment data for model fine-tuning.</div>
+            <div class="tag-list"><span class="tag">LLM</span><span class="tag">Data Annotation</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">📊 evaluation</div>
+            <p style="font-size:.85rem;color:var(--muted)">Port 8304</p>
+            <div class="card-desc">AI review evaluation tool: computes precision, recall, F1 and other metrics; supports human annotation comparison and batch evaluation reports.</div>
+            <div class="tag-list"><span class="tag">Eval Metrics</span><span class="tag">LLM Judge</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">📋 excel_merger</div>
+            <p style="font-size:.85rem;color:var(--muted)">Port 8305</p>
+            <div class="card-desc">Merges multiple Excel annotation files, deduplicates, and converts to JSONL format compatible with mainstream training frameworks.</div>
+            <div class="tag-list"><span class="tag">pandas</span><span class="tag">openpyxl</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h2>Tech Stack</h2>
+      <div class="tag-list">
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit (sub-tool UIs)</span>
+        <span class="tag">Docker Compose (container deployment)</span>
+        <span class="tag">PowerShell start_all.ps1 (Windows)</span>
+        <span class="tag">Shell start.sh (Linux/Mac)</span>
+        <span class="tag">PyMuPDF / pdfplumber</span>
+        <span class="tag">pandas / openpyxl</span>
+      </div>
+
+      <h2>Architecture & Deployment</h2>
+      <div class="arch-box">checker_tools/
+├── main.py              # Streamlit nav home (hub launcher)
+├── pdf2text/            # Tool 1: PDF parsing   → port 8302
+├── process_badcase/     # Tool 2: bad-case factory → port 8303
+├── evaluation/          # Tool 3: model evaluation → port 8304
+├── excel_merger/        # Tool 4: Excel→JSONL   → port 8305
+├── start_all.ps1        # Windows one-click launch
+├── start.sh             # Linux/Mac one-click launch
+└── docker-compose.yml   # container deployment</div>
+
+      <h2>Core Design</h2>
+
+      <p><strong>Full-Pipeline Data Coverage</strong></p>
+      <p>
+        The four tools cover the complete data engineering pipeline for an AI review system:
+        <strong>PDF parsing</strong> (ingestion) → <strong>bad-case generation</strong> (negative samples) →
+        <strong>model evaluation</strong> (quality validation) → <strong>JSONL export</strong> (training delivery).
+      </p>
+
+      <p><strong>Unified Hub Launcher</strong></p>
+      <p>
+        <code>main.py</code> serves as a navigation homepage for entering any sub-tool.
+        <code>start_all.ps1</code> / <code>start.sh</code> launches all 4 services in parallel.
+        <code>docker-compose.yml</code> enables one-command container deployment.
+      </p>
+
+      <h2>Innovations / My Contributions</h2>
+      <ul>
+        <li>Designed and implemented all 4 standalone Streamlit tools covering the full data engineering pipeline</li>
+        <li>Built a unified hub launcher with a clean port allocation scheme</li>
+        <li>Wrote Docker Compose config for production containerized one-command deployment</li>
+        <li>Implemented Excel → JSONL batch conversion compatible with mainstream training frameworks</li>
+        <li>Implemented LLM-as-Judge evaluation framework for automated review quality metrics</li>
+      </ul>
+
+      <h2>Screenshots</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/cover.png" alt="Hub home">
+          <div class="screenshot-caption">Hub homepage — 4 tools at a glance</div>
+        </div>
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/pdf2text.png" alt="pdf2text">
+          <div class="screenshot-caption">pdf2text — batch PDF question extraction</div>
+        </div>
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/evaluation.png" alt="evaluation">
+          <div class="screenshot-caption">evaluation — AI review metric assessment</div>
+        </div>
+        <div class="screenshot-item">
+          <img src="../../assets/screenshots/checker_tools/excel_merger.png" alt="excel_merger">
+          <div class="screenshot-caption">excel_merger — Excel merge &amp; JSONL training data export</div>
+        </div>
+      </div>
+
+      <h2>Links</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub Profile</a>
+        <a href="README.md" class="btn btn-outline">View README</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.en.html">Home</a> · <a href="index.html">中文</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

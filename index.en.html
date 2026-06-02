@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>个人项目作品集</title>
+<title>Personal Project Portfolio</title>
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <nav>
   <div class="container nav-inner">
-    <span class="nav-brand">🛠 项目作品集</span>
+    <span class="nav-brand">🛠 Portfolio</span>
     <div class="nav-links">
-      <a href="#projects">项目</a>
-      <a href="resume/index.html">简历</a>
-      <a href="#about" class="hide-sm">关于</a>
+      <a href="#projects">Projects</a>
+      <a href="resume/index.en.html">Résumé</a>
+      <a href="#about" class="hide-sm">About</a>
       <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
-      <button class="lang-btn" id="lang-toggle">English</button>
+      <button class="lang-btn" id="lang-toggle">中文</button>
     </div>
   </div>
 </nav>
@@ -25,35 +25,34 @@
   <section class="hero">
     <div class="container">
       <div class="hero-avatar">👨‍💻</div>
-      <h1>AI 工程 · <span>项目作品集</span></h1>
-      <p>专注于 AI 应用、NLP 工具链与多模态数据处理系统的开发与落地</p>
+      <h1>AI Engineering · <span>Portfolio</span></h1>
+      <p>Focused on LLM applications, NLP toolchains and multimodal data processing systems</p>
       <div class="hero-tags">
         <span class="hero-tag">Python</span>
         <span class="hero-tag">LLM / LangChain</span>
         <span class="hero-tag">FastAPI</span>
         <span class="hero-tag">React</span>
-        <span class="hero-tag">向量检索</span>
-        <span class="hero-tag">多模态</span>
+        <span class="hero-tag">Vector Search</span>
+        <span class="hero-tag">Multimodal</span>
       </div>
     </div>
   </section>
 
   <section class="section" id="projects">
     <div class="container">
-      <h2 class="section-title">项目列表</h2>
+      <h2 class="section-title">Projects</h2>
       <div class="grid">
 
-        <!-- exam_smart_checker -->
         <div class="card">
           <div class="card-cover">
             <img src="assets/screenshots/exam_smart_checker/cover.png"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="exam_smart_checker cover">
+                 alt="cover">
             <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">📝</div>
           </div>
           <div class="card-body">
-            <div class="card-title">AI 智能试卷审校系统</div>
-            <div class="card-desc">基于 LLM + 向量检索的试卷错误检测与查重平台，支持多语言审校、题型路由与历史题库对比。</div>
+            <div class="card-title">AI Exam Smart Checker</div>
+            <div class="card-desc">LLM + vector-search platform for exam paper error detection and plagiarism checking, with multilingual review and per-question-type routing.</div>
             <div class="tag-list">
               <span class="tag">Python</span>
               <span class="tag">LangChain</span>
@@ -62,76 +61,73 @@
               <span class="tag">Flask</span>
               <span class="tag green">NLP</span>
             </div>
-            <a href="projects/exam-smart-checker/index.html" class="btn">查看详情 →</a>
+            <a href="projects/exam-smart-checker/index.en.html" class="btn">View Details →</a>
           </div>
         </div>
 
-        <!-- mm_dataset_factory -->
         <div class="card">
           <div class="card-cover">
             <img src="assets/screenshots/mm_dataset_factory/task_list.png"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="mm_dataset_factory cover">
+                 alt="cover">
             <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">🗂</div>
           </div>
           <div class="card-body">
-            <div class="card-title">多模态数据集工厂</div>
-            <div class="card-desc">从 Word 试卷一键产出错题图像数据集，4 阶段流水线（文档解析→VLM 规划→AI 生图→质量门控），SSE 实时推流，FastAPI + React/Vite。</div>
+            <div class="card-title">Multimodal Dataset Factory</div>
+            <div class="card-desc">One-click pipeline from Word exam papers to error-question image datasets. 4-stage pipeline (doc parsing → VLM planning → AI image gen → quality gate), SSE streaming, FastAPI + React/Vite.</div>
             <div class="tag-list">
               <span class="tag">FastAPI</span>
               <span class="tag">React</span>
               <span class="tag">SQLAlchemy async</span>
               <span class="tag">SSE</span>
-              <span class="tag green">多模态</span>
+              <span class="tag green">Multimodal</span>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <a href="projects/mm-dataset-factory/index.html" class="btn">查看详情 →</a>
-              <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn btn-outline" target="_blank">📄 文档仓库 →</a>
+              <a href="projects/mm-dataset-factory/index.en.html" class="btn">View Details →</a>
+              <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn btn-outline" target="_blank">📄 Docs Repo →</a>
             </div>
           </div>
         </div>
 
-        <!-- exam_checker_agent -->
         <div class="card">
           <div class="card-cover">
             <img src="assets/screenshots/exam_checker_agent/cover.png"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="exam_checker_agent cover">
+                 alt="cover">
             <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">⚙️</div>
           </div>
           <div class="card-body">
-            <div class="card-title">试卷审校批处理平台</div>
-            <div class="card-desc">生产级批处理重构版本，5 步任务状态机 + 乐观锁 + 多租户隔离，React + FastAPI + Docker 全栈架构。</div>
+            <div class="card-title">Exam Checker Agent Platform</div>
+            <div class="card-desc">Production batch-processing rewrite: 5-step task state machine, optimistic locking, multi-tenant isolation. Full-stack React + FastAPI + Docker.</div>
             <div class="tag-list">
               <span class="tag">React</span>
               <span class="tag">FastAPI</span>
               <span class="tag">Flask</span>
               <span class="tag">SQLite</span>
               <span class="tag">Docker</span>
-              <span class="tag green">全栈</span>
+              <span class="tag green">Full-Stack</span>
             </div>
-            <a href="projects/exam-checker-agent/index.html" class="btn">查看详情 →</a>
+            <a href="projects/exam-checker-agent/index.en.html" class="btn">View Details →</a>
           </div>
         </div>
 
-        <!-- checker_tools -->
         <div class="card">
           <div class="card-cover">
             <img src="assets/screenshots/checker_tools/cover.png"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="checker_tools cover">
+                 alt="cover">
             <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">🧰</div>
           </div>
           <div class="card-body">
-            <div class="card-title">审校辅助工具集</div>
-            <div class="card-desc">涵盖 PDF 解析、坏例生成、模型评测、训练集导出的 4 合 1 Streamlit 工具箱，配套 Docker Compose 部署。</div>
+            <div class="card-title">Checker Auxiliary Toolkit</div>
+            <div class="card-desc">4-in-1 Streamlit toolbox covering PDF parsing, bad-case generation, model evaluation and training-data export. Docker Compose ready.</div>
             <div class="tag-list">
               <span class="tag">Python</span>
               <span class="tag">Streamlit</span>
               <span class="tag">Docker</span>
-              <span class="tag green">数据工程</span>
+              <span class="tag green">Data Engineering</span>
             </div>
-            <a href="projects/checker-tools/index.html" class="btn">查看详情 →</a>
+            <a href="projects/checker-tools/index.en.html" class="btn">View Details →</a>
           </div>
         </div>
 
@@ -141,10 +137,11 @@
 
   <section class="section" id="about">
     <div class="container">
-      <h2 class="section-title">关于</h2>
+      <h2 class="section-title">About</h2>
       <p style="color:var(--muted);max-width:640px;">
-        本作品集收录了我在 AI 应用工程领域的核心项目，涵盖 LLM 应用落地、NLP 工具链、全栈 Web 平台与数据集工程。
-        欢迎通过 <a href="https://github.com/CODE-BULIAO">GitHub</a> 联系或查看更多内容。
+        This portfolio showcases my core projects in AI application engineering, spanning LLM applications,
+        NLP toolchains, full-stack web platforms and dataset engineering.
+        Feel free to connect via <a href="https://github.com/CODE-BULIAO">GitHub</a>.
       </p>
     </div>
   </section>
@@ -152,7 +149,7 @@
 
 <footer>
   <div class="container">
-    <p>© 2025 · 个人作品集 · <a href="https://github.com/CODE-BULIAO" target="_blank">GitHub</a> · <a href="index.en.html">English version</a></p>
+    <p>© 2025 · Personal Portfolio · <a href="https://github.com/CODE-BULIAO" target="_blank">GitHub</a> · <a href="index.html">中文版</a></p>
   </div>
 </footer>
 

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multimodal Dataset Factory · Project Detail</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">🛠 Portfolio</span>
+    <div class="nav-links">
+      <a href="../../index.en.html">Home</a>
+      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <button class="lang-btn" id="lang-toggle">中文</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="detail-hero">
+      <a href="../../index.en.html" class="back-link">← Back to Home</a>
+      <div class="tag-list" style="margin-bottom:12px">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">React 18 / Vite</span>
+        <span class="tag">TypeScript strict</span>
+        <span class="tag">SQLAlchemy async</span>
+        <span class="tag">SSE real-time streaming</span>
+        <span class="tag green">Multimodal · Data Engineering</span>
+      </div>
+      <h1>🗂 Multimodal Dataset Factory</h1>
+      <p class="sub">mm_dataset_factory — Word/DOCX → multimodal error-question image dataset in one click; 4-stage pipeline + SSE real-time streaming + Skill-as-contract delivery architecture</p>
+    </section>
+
+    <section class="detail-content">
+
+      <div class="callout green" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px">
+        <span style="flex:1;min-width:240px"><strong style="display:inline">📄 Full technical docs (standalone repo)</strong>　Architecture, pipeline internals, L1/L2/L3 error system, data model, SSE, API — bilingual, 9 deep docs + screenshots.</span>
+        <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn" target="_blank" style="white-space:nowrap">Go to Docs Repo →</a>
+      </div>
+
+      <h2>Overview</h2>
+      <p>
+        Targeting multimodal model (LMM/VLM) training data production, the system automatically extracts
+        image-bearing exam questions from Word/DOCX documents and produces training-ready error-question
+        image datasets through a 4-stage pipeline:
+        JSON / JSONL / XLSX annotation files + image directory (zip archive).
+        Decoupled front/back-end architecture: FastAPI provides async REST API + SSE real-time streaming,
+        React/Vite provides the UI — launched with a single <code>python run.py</code>.
+      </p>
+      <div class="callout">
+        <strong>Use Cases</strong> LMM/VLM error-question training data · Multimodal benchmark construction · Image-text dataset production pipeline
+      </div>
+
+      <h2>Tech Stack</h2>
+      <div class="tag-list">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI (async REST + SSE)</span>
+        <span class="tag">SQLAlchemy 2.x async (ORM)</span>
+        <span class="tag">SQLite (persistence)</span>
+        <span class="tag">React 18</span>
+        <span class="tag">TypeScript strict (no any)</span>
+        <span class="tag">Vite (build + dev proxy)</span>
+        <span class="tag">VLM API (image understanding)</span>
+        <span class="tag">Text-to-Image API (image generation)</span>
+        <span class="tag">python-docx / Pillow</span>
+      </div>
+
+      <h2>4-Stage Production Pipeline</h2>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <span class="step-num">①</span>
+          <div class="step-name">paper-structuring</div>
+          <div class="step-desc">Doc parse · image-bearing question extraction</div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">②</span>
+          <div class="step-name">vlm-error-planning</div>
+          <div class="step-desc">VLM error planning · L1/L2/L3 classification</div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">③</span>
+          <div class="step-name">text2image-generation</div>
+          <div class="step-desc">AI image generation · error-image replacement</div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">④</span>
+          <div class="step-name">quality-gate</div>
+          <div class="step-desc">Quality review · dataset export</div>
+        </div>
+      </div>
+
+      <h2>Architecture</h2>
+      <div class="arch-box">┌─────────────────────────────────────────────────────────┐
+│                Frontend Layer (React 18 + Vite)           │
+│  Task list / Samples browser / Plan details / Progress    │
+│  useTaskEvents() Hook ← SSE /api/events                   │
+└──────────────────────┬──────────────────────────────────┘
+                       │ HTTP  port 8000 (5173 → proxy)
+┌──────────────────────▼──────────────────────────────────┐
+│              FastAPI Main Service (apps/api/)             │
+│                                                          │
+│  /api/tasks/*     Task CRUD + stage status               │
+│  /api/runs/*      Execute pipeline stages                │
+│  /api/samples/*   Sample query / filtering               │
+│  /api/datasets/*  Export JSON/JSONL/XLSX/zip             │
+│  /api/events      SSE real-time event stream             │
+│  /api/settings    System configuration                   │
+│  /static/*        Task artifact static files (whitelist) │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│                  Infrastructure Layer                     │
+│  SQLAlchemy async + SQLite  (tasks / sample_states)      │
+│  asyncio EventBus           (in-process SSE broadcast)   │
+│  File system  data/tasks/{task_id}/                       │
+│    images/ · extraction_debug/ · planning/ · generated/  │
+└─────────────────────────────────────────────────────────┘</div>
+
+      <h2>Technical Deep-Dive</h2>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">① Stage 1: Document Structuring (paper-structuring)</h3>
+      <p>
+        Reads Word/DOCX documents and extracts content at the granularity of individual sub-questions (one Sample per sub-question).
+        Rule: <strong>only image-bearing questions are retained</strong>; text-only questions are skipped.
+        Images are re-numbered per question (<code>img_01</code>, <code>img_02</code> …),
+        and question text retains placeholders in the form <code>&lt;img_01&gt;</code>
+        to track image-text correspondence in downstream stages.
+        Images are saved to <code>tasks/{task_id}/images/</code> as <code>q0001_img_01.png</code>.
+        Debug artifacts are also written: extracted text, imageMap JSON, raw image backup.
+      </p>
+      <p>Key Sample fields: <code>sample_no</code> · <code>source_file</code> · <code>question_no</code> · <code>subject</code> · <code>question_type</code> · <code>question_text</code> · <code>image_count</code> · <code>image_map</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">② Stage 2: VLM Error Planning (vlm-error-planning) — L1/L2/L3 Error Taxonomy</h3>
+      <p>Calls the VLM API to analyze each image-bearing question and outputs exactly 3 planning rows per sample (L1 / L2 / L3):</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-title">L1 · Image Swap</div>
+          <div class="fc-desc">Substitutes another question's image to create an image-text content mismatch. No "post-generation evaluation" loop — direct swap.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title">L2 · Parameter Mismatch</div>
+          <div class="fc-desc">Image is modifiable; question parameters conflict (e.g. length vs. angle contradiction). Triggers the evaluation loop: VLM verifies anchor consistency (numeric / symbolic / structural) → decision: pass / repair / regenerate.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title">L3 · Unsolvable Logic</div>
+          <div class="fc-desc">Image is modifiable; question-image combination has no solution. Requires an <code>unsolvable_reason</code>. Also enters the evaluation loop; reaches <code>machine_reject</code> after max retries.</div>
+        </div>
+      </div>
+      <p>
+        <strong>Text enrichment mechanism</strong>: When an L2/L3 plan involves "modifying a numeric value in the image"
+        but the question text lacks the corresponding numeric anchor, a controlled text enrichment pass is executed
+        first and its output is merged into the exported <code>question_text</code> before evaluation.
+        The enrichment must not be deferred to the image-generation stage — data consistency is enforced at planning time.
+      </p>
+      <p>Planning artifacts: <code>planning/plan_eval_report.jsonl</code> (severity / decision / judge_trace) + <code>questions_prompt_plan.xlsx/.jsonl</code></p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">③ Stage 3: Image Generation (text2image-generation)</h3>
+      <p>
+        Uses <code>questions_prompt_plan.jsonl</code> as input. L2/L3 rows invoke the Text-to-Image API
+        to generate replacement images; L1 rows directly swap images from the task image library without calling
+        the generation API. Generated images are saved to <code>tasks/{task_id}/generated/</code>,
+        indexed by sample_no + error_level.
+      </p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">④ SSE In-Process Event Bus (asyncio EventBus)</h3>
+      <p>
+        Each pipeline stage runner broadcasts progress events via <code>EventBus.publish(Event)</code>.
+        The SSE route <code>/api/events</code> maintains an independent <code>asyncio.Queue</code> per subscriber,
+        achieving zero-latency in-process broadcast. The frontend subscribes via a <code>useTaskEvents()</code> Hook
+        with auto-reconnect and 15s keepalive, showing per-question processing status and progress counts in real time.
+      </p>
+      <div class="arch-box">Runner ──publish()──→ EventBus._subscribers: set[asyncio.Queue]
+                                    └──→ Queue(client_1)  ──→ SSE /api/events
+                                    └──→ Queue(client_2)  ──→ SSE /api/events
+Frontend useTaskEvents() ←── EventSource → auto-reconnect + keepalive(15s)</div>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑤ Data Model (SQLAlchemy async ORM)</h3>
+      <div class="arch-box">TaskORM                      SampleStateORM
+  task_id  (PK, str)          id          (PK, autoincrement)
+  title                       task_id     (FK → tasks)
+  current_stage               sample_no   (idx)
+  created_at                  stage       (paper-structuring / vlm-error-planning / …)
+  updated_at                  status      (idle / running / done / failed / machine_reject)
+  └── sample_states[]         updated_at
+      (cascade delete)        [UQ: task_id + sample_no + stage]</div>
+      <p>
+        Stage progress is aggregated on the frontend by counting <code>SampleState.status</code> values
+        (total / done / failed / machine_reject) — no separate progress table needed.
+        All ORM operations use <code>async with session</code> for non-blocking execution.
+      </p>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑥ SKILL.md as Functional Delivery Contract</h3>
+      <p>
+        Each feature module ships a <code>SKILL.md</code> that formally defines:
+        supported actions (create_task / run_task / list_samples / export_dataset),
+        input field constraints, output schema (success / data / errors / meta),
+        and stage artifact paths and formats. This lets AI Coding Agents validate features
+        against the contract rather than guessing API behavior from code.
+      </p>
+      <div class="callout callout green">
+        <strong>Engineering Highlights</strong> deliverable (artifacts) and process (docs) directories strictly separated; TypeScript strict mode bans all any; Python fully typed with from __future__ import annotations for forward compatibility.
+      </div>
+
+      <h3 style="font-size:1rem;margin:20px 0 10px;color:var(--text)">⑦ Export Formats</h3>
+      <p>After the quality gate passes, multiple export formats are supported:</p>
+      <ul>
+        <li><strong>JSON / JSONL</strong> — standard multimodal training data format</li>
+        <li><strong>XLSX</strong> — human review and editing</li>
+        <li><strong>images.zip</strong> — all generated images packaged</li>
+        <li>StaticFiles allowlist ensures only known-safe paths are accessible via <code>/static/*</code></li>
+      </ul>
+
+      <h2>API Endpoints</h2>
+      <div class="arch-box">GET    /api/tasks              Task list (with aggregated stage progress)
+POST   /api/tasks              Create task (upload Word document)
+GET    /api/tasks/{id}         Task detail + artifact URLs
+POST   /api/runs/{id}/start    Start / resume pipeline to specified stage
+GET    /api/samples/{id}       Paginated sample query
+GET    /api/samples/{id}/filter Filter by subject / question_type / error_level
+GET    /api/datasets/{id}      Export dataset (JSON/JSONL/XLSX/zip)
+GET    /api/events             SSE real-time event stream
+GET    /api/settings           System config (LLM / storage paths)
+GET    /health                 Health check</div>
+
+      <h2>Screenshots</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/task_list.png"
+               data-caption="Task list — real data (408 samples / 19-sample batch), stage status overview" alt="Task list">
+          <div class="screenshot-caption">① Task list — real data, stage status</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/structuring.png"
+               data-caption="Structuring stage — parsed document samples, image-bearing questions per sample (408 total)" alt="Structuring">
+          <div class="screenshot-caption">② Structuring — parsed samples, image-bearing questions</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/planning.png"
+               data-caption="VLM error planning — sample list on left, L1/L2/L3 plan details on right" alt="VLM planning">
+          <div class="screenshot-caption">③ VLM error planning — L1/L2/L3 plan details</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/generation.png"
+               data-caption="Image generation — L1 image swap, L2/L3 AI generation, batch run support" alt="Generation">
+          <div class="screenshot-caption">④ AI generation — L1 swap / L2·L3 generate</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/export.png"
+               data-caption="Export stage — artifact file list, one-click generate xlsx/json/jsonl/images.zip" alt="Export">
+          <div class="screenshot-caption">⑤ Export — artifact list + one-click zip</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="lb-trigger" src="../../assets/screenshots/mm_dataset_factory/new_task.png"
+               data-caption="New task dialog — upload Word document, set default subject and question type" alt="New task">
+          <div class="screenshot-caption">⑥ New task — upload Word, set defaults</div>
+        </div>
+      </div>
+
+      <h2>Key Highlights</h2>
+      <ul>
+        <li>4-stage pipeline covers the full chain from document parsing to dataset export, with per-stage retry support</li>
+        <li>L1/L2/L3 three-tier error planning + post-generation evaluation loop ensures data quality</li>
+        <li>asyncio EventBus + SSE streaming — frontend shows per-question progress with zero polling</li>
+        <li>SKILL.md contract-driven development — AI agents can validate features against the formal spec</li>
+        <li>SQLAlchemy async ORM + SQLite — fully async, non-blocking</li>
+        <li>TypeScript strict bans all any; Python fully typed</li>
+      </ul>
+
+      <h2>Links</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn" target="_blank">📄 Full Docs Repo (Markdown · bilingual)</a>
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub Profile</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2025 · <a href="../../index.en.html">Home</a> · <a href="index.html">中文</a></p>
+  </div>
+</footer>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>
