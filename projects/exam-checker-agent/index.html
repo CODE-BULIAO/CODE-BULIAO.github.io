@@ -31,8 +31,8 @@
         <span class="tag">Docker</span>
         <span class="tag green">全栈 · 生产级</span>
       </div>
-      <h1>⚙️ 试卷审校批处理平台</h1>
-      <p class="sub">exam_checker_agent — 生产级批处理重构版本，5 步状态机 + 多租户隔离 + 双 Web 框架融合</p>
+      <h1>⚙️ 多语言试卷审校 Agent</h1>
+      <p class="sub">exam_checker_agent — 自动拆题 + 逐题路由检测 + 四段式图文一致性审校 + 三类查重 + 可量化评测；生产级批处理重构版本</p>
     </section>
 
     <section class="detail-content">
@@ -44,6 +44,13 @@
       </p>
       <div class="info-box">
         <strong>应用场景：</strong>多机构并发审校、后台批量任务管理、SaaS 化部署
+      </div>
+
+      <div class="callout green">
+        <strong>📖 完整设计文档（脱敏归档）</strong>
+        架构、Prompt 工程、四段式图片审校链路、去重聚合、量化指标等深度内容（含 Mermaid 流程图）整理在独立文档仓库，
+        不含可运行源码与题目数据：
+        <a href="https://github.com/CODE-BULIAO/exam-checker-agent" target="_blank" rel="noopener">在 GitHub 阅读 →</a>
       </div>
 
       <h2>技术栈</h2>
@@ -137,6 +144,94 @@
         <li>编写 Docker 镜像与一键部署脚本</li>
       </ul>
 
+      <h2>端到端流程</h2>
+      <p>一份文档进来，依次经过六个节点；Excel/zip 评测集走「解析 → 检测 → 评测」短主线。</p>
+      <div class="pipeline">
+        <div class="pipeline-step"><div class="step-num">1</div><div class="step-name">解析</div><div class="step-desc">转文本 · 骨干提取 · 并发填充 · 展平</div></div>
+        <div class="pipeline-step"><div class="step-num">2</div><div class="step-name">路由</div><div class="step-desc">每题判定跑哪些检测</div></div>
+        <div class="pipeline-step"><div class="step-num">3</div><div class="step-name">检测</div><div class="step-desc">文本类 + 图文一致性</div></div>
+        <div class="pipeline-step"><div class="step-num">4</div><div class="step-name">去重聚合</div><div class="step-desc">确定性优先级 + LLM 聚合</div></div>
+        <div class="pipeline-step"><div class="step-num">5</div><div class="step-name">查重/评测</div><div class="step-desc">卷内·卷间·历史 / 混淆矩阵</div></div>
+        <div class="pipeline-step"><div class="step-num">6</div><div class="step-name">报告</div><div class="step-desc">Word / Excel / ZIP + 逐题清单</div></div>
+      </div>
+
+      <h2>★ 图片审校：四段式多模态链路</h2>
+      <p>
+        图文一致性（图里标的值和题干说的不一样、或配错了别题的图）是审校最难、最有价值的部分。
+        多模态模型常「看图说话很流畅、却对图中关键锚点视而不见」。为此设计了一条四段式链路：
+      </p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">①</div>
+          <div class="fc-title">分类 + 公式 OCR</div>
+          <div class="fc-desc">VLM 分 formula/diagram（边界图保守归 diagram 防漏检）；公式图 OCR 回填进题干，得到「增强题干」。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">②</div>
+          <div class="fc-title">多图单次检测</div>
+          <div class="fc-desc">所有示意图 + 增强题干一次调用；强制输出「图像观察清单 + 题干断言对账表」，逼模型逐项枚举对账，而非印象式肯定。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">③</div>
+          <div class="fc-title">纯文本复审兜底</div>
+          <div class="fc-desc">Step3 判无错时触发：不看图，只读 VLM 写下的观察清单与题干对账，专攻漏报，<b>只允许 false→true 翻转</b>以保护精确率。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">④</div>
+          <div class="fc-title">工程巧思</div>
+          <div class="fc-desc">全局 base64 缓存（8 线程预下载）、SVG→PNG、最小尺寸放大、zip+xlsx 图像桥接与跨行占位符全局重编号。</div>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>量化收益</strong>
+        同一数据集、同模型同参数下，把「一次性扔图给 VLM」重构为四段式链路 + 强制对账 Prompt + 纯文本复审后，
+        图文不一致<b>召回率从基线约 10%（旧实现 recall≈0.264）显著提升</b>（findings 从个位数到数百条），
+        且通过「复审只许 false→true」保住了精确率。
+      </div>
+
+      <h2>Agent 还是工作流？（诚实剖析）</h2>
+      <p>
+        它是一条<strong>确定性多阶段流水线</strong>，里面嵌了<strong>两个受约束的 LLM 决策点</strong>：
+      </p>
+      <ul>
+        <li><strong>路由</strong>：每题判定跑哪些检测（输出布尔开关，<b>缺键即视为 false</b> 的 fail-closed 设计）。</li>
+        <li><strong>错误聚合</strong>：对一道题的多条报错决定 <code>keep / merge / delete</code>（锁死 error_type，失败回退不丢错）。</li>
+      </ul>
+      <p>
+        LLM 不驱动控制流分支、不自我重规划。设计哲学是<strong>「能用可复现规则的地方就用规则，只有需要语义理解处才交给 LLM，并把 LLM 输出空间约束到最小」</strong>——这正是它「稳」的原因，也是它当前「不那么 agentic」的取舍。面试中会把它诚实定位为「带 LLM 决策点的可靠工作流」，并给出向真 agent 演进的路线。
+      </p>
+
+      <h2>错误类别与 Prompt 工程</h2>
+      <p>
+        <strong>20 个检测任务 / 4 语言</strong>（中 10、日 4、德 3、法 3）。UI 上一个「错别字」勾选自动展开 4 语言任务，
+        <strong>统一错误类型映射</strong>解耦「展示口径（10 类）」与「执行任务（20 个）」。
+      </p>
+      <p>检测 Prompt 有稳定解剖结构：<code>角色（只检测不解题）→ 输入说明（reference 只读）→ 核心目标 → 严格禁止 → 工作流程（含 ≥0.7 置信度门槛）→ 样例 → 严重度规则 → 锁死 error_type</code>，所有任务复用同一份固定 JSON 输出模板（<code>think/reason/errors[...]</code>，含 <code>anchor_text</code> 用于在 Word 中唯一定位）。人工复核可沉淀为动态 Few-shot，按向量相似度召回注入后续检测。</p>
+
+      <h2>量化指标与韧性</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">📏</div>
+          <div class="fc-title">评测闭环</div>
+          <div class="fc-desc">带标注数据集跑混淆矩阵，输出 precision / recall / F1 / <b>F2（召回加权）</b> / FPR；审校宁可多报别漏，故重 F2。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">💰</div>
+          <div class="fc-title">Token 计量</div>
+          <div class="fc-desc">按阶段拆分 prompt/completion/total token；长短调用预算分档，控成本。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🔁</div>
+          <div class="fc-title">四级容错</div>
+          <div class="fc-desc">调用级（超时/退化重复/坏 JSON 修复/配置错快速失败）→ 状态机重试 → 心跳僵尸回收 → 单题重试。</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🧹</div>
+          <div class="fc-title">双层去重</div>
+          <div class="fc-desc">确定性优先级聚合（根因抑制症状，可审计）+ LLM 语义聚合（失败回退不丢错）。</div>
+        </div>
+      </div>
+
       <h2>效果截图</h2>
       <div class="screenshot-grid">
         <div class="screenshot-item">
@@ -158,7 +253,8 @@
 
       <h2>相关链接</h2>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub 主页</a>
+        <a href="https://github.com/CODE-BULIAO/exam-checker-agent" class="btn" target="_blank" rel="noopener">📖 完整设计文档（含流程图）</a>
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank" rel="noopener">GitHub 主页</a>
         <a href="README.md" class="btn btn-outline">查看 README</a>
       </div>
     </section>

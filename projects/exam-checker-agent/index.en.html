@@ -31,8 +31,8 @@
         <span class="tag">Docker</span>
         <span class="tag green">Full-Stack · Production</span>
       </div>
-      <h1>⚙️ Exam Checker Agent Platform</h1>
-      <p class="sub">exam_checker_agent — Production batch-processing platform with 5-step state machine, multi-tenant isolation and dual web-framework fusion</p>
+      <h1>⚙️ Multilingual Exam Review Agent</h1>
+      <p class="sub">exam_checker_agent — Auto question splitting + per-question routed detection + four-stage image-text review + three-way plagiarism + measurable evaluation; production batch-processing rewrite</p>
     </section>
 
     <section class="detail-content">
@@ -45,6 +45,13 @@
       </p>
       <div class="info-box">
         <strong>Use Cases:</strong> Multi-institution concurrent review, background batch task management, SaaS deployment
+      </div>
+
+      <div class="callout green">
+        <strong>📖 Full design docs (desensitized archive)</strong>
+        Architecture, prompt engineering, the four-stage image-text review pipeline, dedup/aggregation and metrics
+        (with Mermaid flowcharts) live in a standalone docs repo — no runnable source or exam data:
+        <a href="https://github.com/CODE-BULIAO/exam-checker-agent" target="_blank" rel="noopener">Read on GitHub →</a>
       </div>
 
       <h2>Tech Stack</h2>
@@ -137,6 +144,35 @@
         <li>Wrote Docker image and one-command deployment scripts</li>
       </ul>
 
+      <h2>★ Image Review: Four-Stage Multimodal Pipeline</h2>
+      <p>
+        Image-text consistency (a figure whose labels contradict the question, or the wrong figure entirely) is the
+        hardest, highest-value part of review. VLMs often "describe the image fluently yet miss the key anchor". The pipeline:
+      </p>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="fc-icon">①</div><div class="fc-title">Classify + Formula OCR</div><div class="fc-desc">VLM splits formula/diagram (borderline → diagram to avoid misses); formula images OCR'd back into the stem.</div></div>
+        <div class="feature-card"><div class="fc-icon">②</div><div class="fc-title">Multi-image Detection</div><div class="fc-desc">All diagrams + enriched stem in one call; forced "image observation checklist + claim reconciliation table" to enumerate facts, not impressions.</div></div>
+        <div class="feature-card"><div class="fc-icon">③</div><div class="fc-title">Text-only Re-review</div><div class="fc-desc">Triggers when Step3 finds no error: no image, only the VLM's own checklist vs. the stem; <b>false→true flips only</b> to protect precision.</div></div>
+        <div class="feature-card"><div class="fc-icon">④</div><div class="fc-title">Engineering</div><div class="fc-desc">Global base64 cache (8-thread prefetch), SVG→PNG, min-size upscale, zip+xlsx image bridging with cross-row placeholder renumbering.</div></div>
+      </div>
+      <div class="callout">
+        <strong>Quantified gain</strong>
+        On the same dataset, same model and params, refactoring "one-shot image to VLM" into this four-stage pipeline +
+        forced-reconciliation prompt + text-only re-review lifted image-text inconsistency
+        <b>recall from a baseline of ~10% (legacy recall≈0.264) markedly higher</b> (findings from single digits to hundreds),
+        while "re-review flips false→true only" preserved precision.
+      </div>
+
+      <h2>Agent or Workflow? (an honest take)</h2>
+      <p>
+        It is a <strong>deterministic multi-stage pipeline</strong> with <strong>two constrained LLM decision points</strong>:
+        <strong>routing</strong> (which checks to run per question; missing key = false, fail-closed) and
+        <strong>error aggregation</strong> (<code>keep / merge / delete</code>; error_type locked, failures fall back without dropping errors).
+        The LLM never drives control flow or self-replans — the philosophy is "use reproducible rules wherever possible,
+        reserve the LLM for genuine semantic judgment, and constrain its output space to the minimum". Positioned honestly
+        as a reliable LLM-in-the-loop workflow, with a clear path toward a more agentic form.
+      </p>
+
       <h2>Screenshots</h2>
       <div class="screenshot-grid">
         <div class="screenshot-item">
@@ -158,7 +194,8 @@
 
       <h2>Links</h2>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank">GitHub Profile</a>
+        <a href="https://github.com/CODE-BULIAO/exam-checker-agent" class="btn" target="_blank" rel="noopener">📖 Full Design Docs</a>
+        <a href="https://github.com/CODE-BULIAO" class="btn btn-outline" target="_blank" rel="noopener">GitHub Profile</a>
         <a href="README.md" class="btn btn-outline">View README</a>
       </div>
     </section>
