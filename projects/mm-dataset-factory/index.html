@@ -255,6 +255,25 @@ GET    /health                 健康检查</div>
         </div>
       </div>
 
+      <h2>提示词工程与 LLM 架构</h2>
+      <p>
+        规划阶段是提示词工程的核心。<strong>未使用 LangChain</strong>，而是自研薄封装
+        （httpx + OpenAI 兼容 Chat Completions + <code>.prompt</code> 模板 + Pydantic），
+        以换取对提示词、JSON 容错、多供应商适配的完全掌控。
+      </p>
+      <ul>
+        <li><strong>形态</strong>：确定性工作流为骨架，规划阶段内嵌 <strong>planner–judge（LLM-as-Judge）自我修正闭环</strong>（pass / repair / regenerate / machine_reject）。</li>
+        <li><strong>提示词分层</strong>：角色 → 输入槽 → 目标 → 分级选参策略 → 等级硬边界（l2 仅参数层 / l3 必须结构层）→ 三要素写作约束（定位锚点 + 具体画法 + 可视验收）→ 正反例 → JSON 字段白名单。</li>
+        <li><strong>控制手段</strong>：system 强制 JSON、温度分档（抽取/评审 0.0、planner 0.2）、judge 先产出 alignment_table 再裁决、关闭 thinking。</li>
+        <li><strong>生图 prompt</strong>：固定「局部编辑」前缀 + 题干 + 图中参数 + planner 改图指令；原图随请求上传；L1 / text 不调生图。</li>
+        <li><strong>多层兜底</strong>：JSON 三级容错、planner 正则 guard、judge 异常当 regenerate、轮次耗尽 best-of 择优、生图重试 + 指数退避、provider 自动切 DashScope。</li>
+        <li><strong>Few-shot</strong>：l2 / l3 / judge 提示内嵌正例 + 反例（标注"仅学风格，勿原样复述"）。</li>
+      </ul>
+      <div class="callout">
+        <strong>完整拆解</strong>（每条 prompt 原文、planner–judge 控制流图、兜底清单）见文档仓库
+        <a href="https://github.com/CODE-BULIAO/mm-dataset-factory/blob/main/docs/10-prompt-engineering.md" target="_blank">10 · 提示词工程与 LLM 架构</a>。
+      </div>
+
       <h2>核心亮点</h2>
       <ul>
         <li>4 阶段流水线覆盖从文档解析到数据集导出的全链路，支持按阶段重试</li>

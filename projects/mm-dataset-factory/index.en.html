@@ -261,6 +261,25 @@ GET    /health                 Health check</div>
         </div>
       </div>
 
+      <h2>Prompt Engineering &amp; LLM Architecture</h2>
+      <p>
+        The planning stage is the heart of the prompt engineering. <strong>No LangChain</strong> —
+        a thin hand-rolled wrapper (httpx + OpenAI-compatible Chat Completions + <code>.prompt</code>
+        templates + Pydantic) for full control over prompts, JSON tolerance and multi-vendor adaptation.
+      </p>
+      <ul>
+        <li><strong>Form</strong>: a deterministic workflow skeleton with an embedded <strong>planner–judge (LLM-as-Judge) self-correction loop</strong> (pass / repair / regenerate / machine_reject).</li>
+        <li><strong>Prompt skeleton</strong>: role → input slots → objective → tiered param strategy → level hard-boundary (l2 = param layer / l3 = structural) → 3-element writing constraints (anchor + concrete drawing + visual acceptance) → positive/negative examples → JSON field allowlist.</li>
+        <li><strong>Control</strong>: system-forced JSON, temperature tiers (0.0 extraction/judging, 0.2 planner), judge emits alignment_table before the verdict, thinking disabled.</li>
+        <li><strong>Image prompt</strong>: fixed "local edit" preamble + stem + image params + planner instruction; original image uploaded; L1 / text skip generation.</li>
+        <li><strong>Fallbacks</strong>: 3-tier JSON tolerance, planner regex guard, judge exception → regenerate, best-of on exhaustion, generation retry + backoff, provider auto-switch to DashScope.</li>
+        <li><strong>Few-shot</strong>: l2 / l3 / judge prompts embed positive + negative examples ("style only, do not copy").</li>
+      </ul>
+      <div class="callout">
+        <strong>Full breakdown</strong> (every prompt's text, planner–judge flow chart, fallback list) in the docs repo:
+        <a href="https://github.com/CODE-BULIAO/mm-dataset-factory/blob/main/docs/10-prompt-engineering.en.md" target="_blank">10 · Prompt Engineering &amp; LLM Architecture</a>.
+      </div>
+
       <h2>Key Highlights</h2>
       <ul>
         <li>4-stage pipeline covers the full chain from document parsing to dataset export, with per-stage retry support</li>
