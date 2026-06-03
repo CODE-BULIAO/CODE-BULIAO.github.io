@@ -16,7 +16,7 @@ Python 3.12 · React + Vite · FastAPI · Flask (WSGI in-process) · SQLite · O
 
 ## 亮点 / Highlights
 
-- 四段式多模态图文审校 + 纯文本复审兜底召回，图文不一致召回率较弱实现显著提升（基线 recall≈0.264）
+- 四段式多模态图文审校 + 纯文本复审兜底召回，mmdataset-v3 上召回 0.84（27B 本地）~0.88（plus 云端）、F1 0.89~0.92、FPR≈0.10（弱实现版本召回仅约 0.26）
 - 按题路由（LLM 判定跑哪些检测，缺键即 false）+ 双层去重（确定性优先级 + LLM 聚合）
 - FastAPI ↔ Flask WSGI in-process 融合，零网络跳跃复用旧检测能力
 - 任务级韧性：状态机重试 + 心跳僵尸回收 + execution-issue 单题重试
@@ -24,7 +24,7 @@ Python 3.12 · React + Vite · FastAPI · Flask (WSGI in-process) · SQLite · O
 
 ---
 
-- Four-stage multimodal image-text review + text-only re-review for recall; image-text inconsistency recall lifted markedly over the weak baseline (recall≈0.264)
+- Four-stage multimodal image-text review + text-only re-review for recall; on mmdataset-v3 recall 0.84 (27B local) ~0.88 (plus cloud), F1 0.89~0.92, FPR≈0.10 (weak impl only ~0.26 recall)
 - Per-question routing (LLM decides which checks to run; missing key = false) + two-layer dedup (deterministic priority + LLM aggregation)
 - FastAPI ↔ Flask WSGI in-process fusion, zero network hop to reuse legacy detection
 - Task-level resilience: state-machine retry + heartbeat zombie recovery + per-question retry

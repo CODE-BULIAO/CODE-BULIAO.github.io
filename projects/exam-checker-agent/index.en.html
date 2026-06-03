@@ -156,11 +156,12 @@
         <div class="feature-card"><div class="fc-icon">④</div><div class="fc-title">Engineering</div><div class="fc-desc">Global base64 cache (8-thread prefetch), SVG→PNG, min-size upscale, zip+xlsx image bridging with cross-row placeholder renumbering.</div></div>
       </div>
       <div class="callout">
-        <strong>Quantified gain</strong>
-        On the same dataset, same model and params, refactoring "one-shot image to VLM" into this four-stage pipeline +
-        forced-reconciliation prompt + text-only re-review lifted image-text inconsistency
-        <b>recall from a baseline of ~10% (legacy recall≈0.264) markedly higher</b> (findings from single digits to hundreds),
-        while "re-review flips false→true only" preserved precision.
+        <strong>Quantified gain (mmdataset-v3 benchmark)</strong>
+        Refactoring "one-shot image to VLM" into this four-stage pipeline + forced-reconciliation prompt + text-only re-review,
+        image-text inconsistency detection reaches
+        <b>recall 0.84 (qwen3.6-27B local) ~ 0.88 (plus cloud), F1 0.89~0.92, precision 0.95+, FPR≈0.10</b>
+        (the weak implementation reached only ~0.26 recall), while "re-review flips false→true only" preserved precision.
+        Only vision-capable multimodal models are compared.
       </div>
 
       <h2>Agent or Workflow? (an honest take)</h2>
