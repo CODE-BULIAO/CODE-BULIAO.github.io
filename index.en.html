@@ -3,155 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Personal Project Portfolio</title>
+<title>Sun Yiwen · Personal Homepage</title>
+<meta name="description" content="Sun Yiwen — PhD candidate in Computer Science at The Hong Kong Polytechnic University, seeking an LLM / multimodal / Agent internship.">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<nav>
-  <div class="container nav-inner">
-    <span class="nav-brand">🛠 Portfolio</span>
-    <div class="nav-links">
+<div class="layout">
+
+  <aside class="sidebar">
+    <img class="avatar" src="assets/img/profile.jpg" alt="Sun Yiwen">
+    <div class="s-name">Sun Yiwen<span class="en">孙逸文</span></div>
+    <div class="s-title">Seeking an LLM / multimodal internship</div>
+    <div class="s-affil">PhD candidate, Computer Science (AI)<br>The Hong Kong Polytechnic University · Expected Jan 2027</div>
+    <div class="s-bio">Experienced in Vision-Language Models and Agent systems, from local inference deployment to engineering delivery.</div>
+
+    <nav class="side-nav">
+      <a href="#about">About</a>
+      <a href="#education">Education</a>
       <a href="#projects">Projects</a>
-      <a href="resume/index.en.html">Résumé</a>
-      <a href="#about" class="hide-sm">About</a>
-      <a href="https://github.com/CODE-BULIAO" target="_blank" class="hide-sm">GitHub</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#skills">Skills</a>
+    </nav>
+
+    <div class="side-links">
+      <a href="https://github.com/CODE-BULIAO" target="_blank">GitHub</a>
       <button class="lang-btn" id="lang-toggle">中文</button>
     </div>
-  </div>
-</nav>
+  </aside>
 
-<main>
-  <section class="hero">
-    <div class="container">
-      <div class="hero-avatar">👨‍💻</div>
-      <h1>AI Engineering · <span>Portfolio</span></h1>
-      <p>Focused on LLM applications, NLP toolchains and multimodal data processing systems</p>
-      <div class="hero-tags">
-        <span class="hero-tag">Python</span>
-        <span class="hero-tag">LLM / LangChain</span>
-        <span class="hero-tag">FastAPI</span>
-        <span class="hero-tag">React</span>
-        <span class="hero-tag">Vector Search</span>
-        <span class="hero-tag">Multimodal</span>
-      </div>
-    </div>
-  </section>
+  <main class="content">
 
-  <section class="section" id="projects">
-    <div class="container">
-      <h2 class="section-title">Projects</h2>
-      <div class="grid">
-
-        <div class="card">
-          <div class="card-cover">
-            <img src="assets/screenshots/exam_smart_checker/cover.png"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="cover">
-            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">📝</div>
-          </div>
-          <div class="card-body">
-            <div class="card-title">AI Exam Smart Checker</div>
-            <div class="card-desc">LLM + vector-search platform for exam paper error detection and plagiarism checking, with multilingual review and per-question-type routing.</div>
-            <div class="tag-list">
-              <span class="tag">Python</span>
-              <span class="tag">LangChain</span>
-              <span class="tag">ChromaDB</span>
-              <span class="tag">Streamlit</span>
-              <span class="tag">Flask</span>
-              <span class="tag green">NLP</span>
-            </div>
-            <a href="projects/exam-smart-checker/index.en.html" class="btn">View Details →</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-cover">
-            <img src="assets/screenshots/mm_dataset_factory/task_list.png"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="cover">
-            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">🗂</div>
-          </div>
-          <div class="card-body">
-            <div class="card-title">Multimodal Dataset Factory</div>
-            <div class="card-desc">One-click pipeline from Word exam papers to error-question image datasets. 4-stage pipeline (doc parsing → VLM planning → AI image gen → quality gate), SSE streaming, FastAPI + React/Vite.</div>
-            <div class="tag-list">
-              <span class="tag">FastAPI</span>
-              <span class="tag">React</span>
-              <span class="tag">SQLAlchemy async</span>
-              <span class="tag">SSE</span>
-              <span class="tag green">Multimodal</span>
-            </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <a href="projects/mm-dataset-factory/index.en.html" class="btn">View Details →</a>
-              <a href="https://github.com/CODE-BULIAO/mm-dataset-factory" class="btn btn-outline" target="_blank">📄 Docs Repo →</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-cover">
-            <img src="assets/screenshots/exam_checker_agent/cover.png"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="cover">
-            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">⚙️</div>
-          </div>
-          <div class="card-body">
-            <div class="card-title">Exam Checker Agent Platform</div>
-            <div class="card-desc">Production batch-processing rewrite: 5-step task state machine, optimistic locking, multi-tenant isolation. Full-stack React + FastAPI + Docker.</div>
-            <div class="tag-list">
-              <span class="tag">React</span>
-              <span class="tag">FastAPI</span>
-              <span class="tag">Flask</span>
-              <span class="tag">SQLite</span>
-              <span class="tag">Docker</span>
-              <span class="tag green">Full-Stack</span>
-            </div>
-            <a href="projects/exam-checker-agent/index.en.html" class="btn">View Details →</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-cover">
-            <img src="assets/screenshots/checker_tools/cover.png"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                 alt="cover">
-            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">🧰</div>
-          </div>
-          <div class="card-body">
-            <div class="card-title">Checker Auxiliary Toolkit</div>
-            <div class="card-desc">4-in-1 Streamlit toolbox covering PDF parsing, bad-case generation, model evaluation and training-data export. Docker Compose ready.</div>
-            <div class="tag-list">
-              <span class="tag">Python</span>
-              <span class="tag">Streamlit</span>
-              <span class="tag">Docker</span>
-              <span class="tag green">Data Engineering</span>
-            </div>
-            <a href="projects/checker-tools/index.en.html" class="btn">View Details →</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="about">
-    <div class="container">
-      <h2 class="section-title">About</h2>
-      <p style="color:var(--muted);max-width:640px;">
-        This portfolio showcases my core projects in AI application engineering, spanning LLM applications,
-        NLP toolchains, full-stack web platforms and dataset engineering.
-        Feel free to connect via <a href="https://github.com/CODE-BULIAO">GitHub</a>.
+    <section id="about" class="home-section">
+      <h2>About</h2>
+      <p class="intro-hi">Hi, I'm Sun Yiwen 👋</p>
+      <p>
+        PhD candidate in Computer Science (AI) at The Hong Kong Polytechnic University, researching medical image
+        segmentation under Prof. Cai Jing. I'm seeking an <strong>LLM / multimodal / Agent internship</strong>,
+        graduating Jan 2027 and looking for a long-term role.
       </p>
-    </div>
-  </section>
-</main>
+      <p>
+        I work end-to-end on Vision-Language Models, Agent systems, inference deployment and data engineering —
+        from academic research (several first/second-author SCI papers) to productionizing models
+        (multi-agent systems, local inference, dataset pipelines).
+      </p>
+    </section>
 
-<footer>
-  <div class="container">
-    <p>© 2025 · Personal Portfolio · <a href="https://github.com/CODE-BULIAO" target="_blank">GitHub</a> · <a href="index.html">中文版</a></p>
-  </div>
-</footer>
+    <section id="education" class="home-section">
+      <h2>Education</h2>
+      <div class="edu-row"><span><strong>PhD</strong> · The Hong Kong Polytechnic University · Computer Science (AI, Image Segmentation) · Supervisor: Prof. Cai Jing</span><span class="when">2024.01 – 2027.01</span></div>
+      <div class="edu-row"><span><strong>MSc</strong> · University of Birmingham · Electronic and Computer Engineering</span><span class="when">2022.09 – 2023.09</span></div>
+      <div class="edu-row"><span><strong>BEng</strong> · Beijing Institute of Technology · Measurement and Control Technology (Optics)</span><span class="when">2017.09 – 2021.06</span></div>
+    </section>
+
+    <section id="projects" class="home-section">
+      <h2>Projects</h2>
+      <div class="proj-list">
+
+        <div class="proj-item">
+          <div class="p-head">
+            <span class="p-title">🗂 Multimodal Dataset Factory · mm_dataset_factory</span>
+            <a class="p-link" href="projects/mm-dataset-factory/index.en.html">Details →</a>
+          </div>
+          <div class="p-desc">One-click pipeline from Word exam papers to multimodal error-question image datasets. 4-stage pipeline (structuring → VLM error planning → AI image gen → quality gate) + SSE streaming + post-generation evaluation loop. Ships with a full bilingual docs repo.</div>
+          <div class="tag-list">
+            <span class="tag">FastAPI</span><span class="tag">React 19</span><span class="tag">SQLAlchemy async</span><span class="tag">SSE</span><span class="tag green">Multimodal</span>
+          </div>
+        </div>
+
+        <div class="proj-item">
+          <div class="p-head">
+            <span class="p-title">⚙️ Exam Review Batch Platform · exam-checker-agent</span>
+            <a class="p-link" href="projects/exam-checker-agent/index.en.html">Details →</a>
+          </div>
+          <div class="p-desc">Production-grade batch rebuild: 5-step task state machine + optimistic locking + multi-tenant isolation, React + FastAPI + Docker full-stack.</div>
+          <div class="tag-list">
+            <span class="tag">React</span><span class="tag">FastAPI</span><span class="tag">SQLite</span><span class="tag">Docker</span><span class="tag green">Full-stack</span>
+          </div>
+        </div>
+
+        <div class="proj-item">
+          <div class="p-head">
+            <span class="p-title">📝 AI Exam Review System · exam-smart-checker</span>
+            <a class="p-link" href="projects/exam-smart-checker/index.en.html">Details →</a>
+          </div>
+          <div class="p-desc">LLM + vector-retrieval platform for exam error detection and duplicate checking, with multi-dimension judgment, question-type routing and historical-bank comparison.</div>
+          <div class="tag-list">
+            <span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag green">NLP</span>
+          </div>
+        </div>
+
+        <div class="proj-item">
+          <div class="p-head">
+            <span class="p-title">🧰 Review Toolkit · checker-tools</span>
+            <a class="p-link" href="projects/checker-tools/index.en.html">Details →</a>
+          </div>
+          <div class="p-desc">A 4-in-1 Streamlit toolbox covering PDF parsing, bad-case generation, model evaluation and training-set export, with Docker Compose deployment.</div>
+          <div class="tag-list">
+            <span class="tag">Python</span><span class="tag">Streamlit</span><span class="tag">Docker</span><span class="tag green">Data Engineering</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="research" class="home-section">
+      <h2>Research Experience</h2>
+
+      <div class="entry">
+        <div class="entry-head"><span>Multi-Agent Exam Review System · Internship (Talkweb Haiyuntian)</span><span class="when">2026.03 – 2026.06</span></div>
+        <div class="tagline">LLM / Agent / vLLM</div>
+        <ul>
+          <li>Built a multi-agent exam review system: LLM-based typo/grammar/logic/semantic detection covering parsing → category judgment → result aggregation.</li>
+          <li>Designed a two-stage image-text review and evaluation-data pipeline (VLM visual check + LLM cross-check + forced reconciliation checklist), raising Recall from 52% to 75%+.</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head"><span>Multimodal Super-Resolution Agent · Paper Reproduction &amp; Extension</span><span class="when">2025.12 – 2026.01</span></div>
+        <div class="tagline">Python / PyTorch / vLLM</div>
+        <ul>
+          <li>Built an SR Agent on open-source frameworks and vLLM, with a full offline inference chain: planning → tool calls → image restoration.</li>
+          <li>Rewrote planning prompts for the local Llama-Vision model, reducing over-reasoning and improving executable plans and tool-call stability.</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head"><span>Zero-Annotation Pathology Nuclei Segmentation · First Author</span><span class="when">2024.01 – 2024.12</span></div>
+        <div class="tagline">Pattern Recognition Letters (SCI / JCR Q2) · Python / PyTorch</div>
+        <ul>
+          <li>A pretrained Vision-Language detector produces zero-shot coarse boxes, enabling training without any pathology annotation.</li>
+          <li>Designed Gaussian-confidence weak supervision + focal loss + Voronoi/k-means complementary coarse labels driving fine nucleus-boundary learning.</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head"><span>Topology-Aware Segmentation of Tubular Structures in 3D Microscopy · First Author</span><span class="when">2025.01 – 2025.12</span></div>
+        <div class="tagline">Physics in Medicine &amp; Biology (SCI / JCR Q1, Under Review) · Python / PyTorch / 3D Seg</div>
+        <ul>
+          <li>Designed a radius-field topology loss + a large-kernel 3D U-Net, improving connectivity and Dice by 4%.</li>
+          <li>Defined annotation and quality-control workflows with partners; fine-tuned and evaluated on a private dataset.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="publications" class="home-section">
+      <h2>Publications &amp; Talks</h2>
+      <ol class="pub-list">
+        <li><strong>ZA-Net</strong>: Zero-Annotation Nuclei Segmentation via Vision-Language Model — first author, Pattern Recognition Letters (SCI / JCR Q2)</li>
+        <li><strong>PGVMS</strong>: A Prompt-Guided Unified Framework for Virtual Multiplex IHC Staining — co-author, IEEE Trans. Med. Imaging (SCI / JCR Q1)</li>
+        <li><strong>Pathological Semantics-Preserving Learning for H&amp;E-to-IHC Virtual Staining</strong> — co-author, MICCAI 2024 (CCF B)</li>
+        <li>Invited talk at the 3rd Intelligent Medicine Symposium</li>
+      </ol>
+    </section>
+
+    <section id="skills" class="home-section">
+      <h2>Skills / Strengths &amp; Others</h2>
+      <ul class="skill-list">
+        <li><strong>Programming</strong>: Python, PyTorch, Linux; LLM/VLM inference deployment (vLLM), Agent systems and data-pipeline engineering.</li>
+        <li><strong>Huawei HarmonyOS app</strong>: published a health app (food recognition / calorie tracking), 2,000+ downloads; 400+ class MobileNet offline inference.</li>
+        <li><strong>Language</strong>: English, IELTS 6.5.</li>
+        <li><strong>Awards</strong>: 2023 UoB PGR Research Image Runner-up; 2019 BIT Outstanding Student &amp; Academic Progress Scholarships.</li>
+        <li><strong>Interests</strong>: photography (VCG contracted photographer); hiking; content creation (1,000+ followers on Xiaohongshu &amp; Bilibili).</li>
+      </ul>
+    </section>
+
+    <footer style="border:none;text-align:left;padding:8px 0 0;color:var(--muted);font-size:.82rem">
+      © 2026 Sun Yiwen · <a href="https://github.com/CODE-BULIAO" target="_blank">GitHub</a> · <a href="index.html">中文</a>
+    </footer>
+
+  </main>
+</div>
 
 <script src="assets/js/main.js"></script>
 </body>

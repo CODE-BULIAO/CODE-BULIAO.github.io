@@ -105,3 +105,49 @@
     bindTriggers();
   }
 })();
+
+// ── Sidebar scrollspy: highlight the current section in .side-nav ─────
+(function () {
+  function init() {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav a[href^="#"]'));
+    if (!links.length || !('IntersectionObserver' in window)) return;
+
+    var map = {};
+    var sections = [];
+    links.forEach(function (a) {
+      var id = a.getAttribute('href').slice(1);
+      var sec = document.getElementById(id);
+      if (sec) { map[id] = a; sections.push(sec); }
+    });
+
+    function setActive(id) {
+      links.forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+
+    var visible = {};
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = e.intersectionRatio;
+        else delete visible[e.target.id];
+      });
+      // pick the section nearest the top that is currently visible
+      var best = null, bestTop = Infinity;
+      Object.keys(visible).forEach(function (id) {
+        var top = document.getElementById(id).getBoundingClientRect().top;
+        if (top < bestTop) { bestTop = top; best = id; }
+      });
+      if (best) setActive(best);
+    }, { rootMargin: '-10% 0px -70% 0px', threshold: [0, 0.1, 0.5, 1] });
+
+    sections.forEach(function (s) { observer.observe(s); });
+    if (sections.length) setActive(sections[0].id);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
