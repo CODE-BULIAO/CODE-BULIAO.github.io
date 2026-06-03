@@ -408,6 +408,13 @@ footer a:hover { color: var(--accent); }
 .proj-item .p-link { font-size: .85rem; white-space: nowrap; font-weight: 600; }
 .proj-item .p-desc { font-size: .88rem; color: var(--muted); margin: 6px 0 10px; }
 .proj-item .tag-list { margin-bottom: 0; }
+.proj-item .p-note {
+  font-size: .82rem; margin: 0 0 10px;
+  background: rgba(63,185,80,.08); border-left: 3px solid var(--accent2);
+  padding: 7px 12px; border-radius: 0 6px 6px 0; color: var(--text);
+}
+.proj-item.featured-bench { border-color: rgba(126,87,194,.4); }
+.proj-more { margin-top: 6px; }
 
 @media (max-width: 900px) {
   .layout { flex-direction: column; gap: 0; }

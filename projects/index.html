@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目 · 孙逸文 (Yiwen Sun)</title>
+<meta name="description" content="孙逸文的项目集合：多模态数据集工厂、EduFig-IC 图文一致性评测基准、试卷审校批处理平台、AI 智能试卷审校系统、审校辅助工具集。">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <header class="detail-hero">
+    <a class="back-link" href="../index.html">← 返回个人主页</a>
+    <a class="lang-btn" href="index.en.html" style="float:right;text-decoration:none">English</a>
+    <h1>全部项目</h1>
+    <p class="sub">LLM / 多模态 / Agent / 数据工程 方向的完整作品列表</p>
+  </header>
+
+  <main class="detail-content">
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">🗂 多模态数据集工厂 · mm_dataset_factory</div>
+          <div class="card-desc">从 Word 试卷一键产出多模态错题图像数据集。4 阶段流水线 + SSE 实时推流 + 生成后评估闭环，附完整中英双语技术文档仓库。</div>
+          <div class="tag-list"><span class="tag">FastAPI</span><span class="tag">React 19</span><span class="tag">SSE</span><span class="tag green">多模态</span></div>
+          <a class="btn" href="mm-dataset-factory/index.html">查看详情 →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">📊 图文一致性评测基准 · EduFig-IC</div>
+          <div class="card-desc">面向理工科含图试题的分级图文一致性检测基准（L1/L2/L3 三级，973 样本），评测多模态大模型的图文对齐与幻觉检测；数据由数据集工厂产出。</div>
+          <div class="tag-list"><span class="tag">多模态评测</span><span class="tag">图文一致性</span><span class="tag green">Benchmark</span></div>
+          <a class="btn" href="../edufig-ic/">查看基准 →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">⚙️ 试卷审校批处理平台 · exam-checker-agent</div>
+          <div class="card-desc">生产级批处理重构版本，5 步任务状态机 + 乐观锁 + 多租户隔离，React + FastAPI + Docker 全栈架构。</div>
+          <div class="tag-list"><span class="tag">React</span><span class="tag">FastAPI</span><span class="tag">Docker</span><span class="tag green">全栈</span></div>
+          <a class="btn" href="exam-checker-agent/index.html">查看详情 →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">📝 AI 智能试卷审校系统 · exam-smart-checker</div>
+          <div class="card-desc">基于 LLM + 向量检索的试卷错误检测与查重平台，支持多维错误判定、题型路由与历史题库对比。</div>
+          <div class="tag-list"><span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag green">NLP</span></div>
+          <a class="btn" href="exam-smart-checker/index.html">查看详情 →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">🧰 审校辅助工具集 · checker-tools</div>
+          <div class="card-desc">涵盖 PDF 解析、坏例生成、模型评测、训练集导出的 4 合 1 Streamlit 工具箱，配套 Docker Compose 部署。</div>
+          <div class="tag-list"><span class="tag">Python</span><span class="tag">Streamlit</span><span class="tag">Docker</span><span class="tag green">数据工程</span></div>
+          <a class="btn" href="checker-tools/index.html">查看详情 →</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    © 2026 孙逸文 · <a href="https://github.com/CODE-BULIAO" target="_blank">GitHub</a> · <a href="index.en.html">English</a>
+  </footer>
+
+</div>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

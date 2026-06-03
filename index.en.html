@@ -68,7 +68,7 @@
     </section>
 
     <section id="projects" class="home-section">
-      <h2>Projects</h2>
+      <h2>Featured Projects</h2>
       <div class="proj-list">
 
         <div class="proj-item">
@@ -77,8 +77,20 @@
             <a class="p-link" href="projects/mm-dataset-factory/index.en.html">Details →</a>
           </div>
           <div class="p-desc">One-click pipeline from Word exam papers to multimodal error-question image datasets. 4-stage pipeline (structuring → VLM error planning → AI image gen → quality gate) + SSE streaming + post-generation evaluation loop. Ships with a full bilingual docs repo.</div>
+          <div class="p-note">📊 The datasets it produces became a benchmark → <a href="edufig-ic/index.en.html">EduFig-IC: graded image–text consistency</a></div>
           <div class="tag-list">
             <span class="tag">FastAPI</span><span class="tag">React 19</span><span class="tag">SQLAlchemy async</span><span class="tag">SSE</span><span class="tag green">Multimodal</span>
+          </div>
+        </div>
+
+        <div class="proj-item featured-bench">
+          <div class="p-head">
+            <span class="p-title">📊 Image–Text Consistency Benchmark · EduFig-IC</span>
+            <a class="p-link" href="edufig-ic/index.en.html">View →</a>
+          </div>
+          <div class="p-desc">A graded image–text consistency benchmark over STEM figure-based exam questions (L1/L2/L3 levels, 973 samples) for evaluating fine-grained image–text alignment and hallucination detection in multimodal LLMs. Data produced by the dataset factory above.</div>
+          <div class="tag-list">
+            <span class="tag">Multimodal eval</span><span class="tag">Image–text consistency</span><span class="tag">VLM</span><span class="tag green">Benchmark</span>
           </div>
         </div>
 
@@ -93,29 +105,8 @@
           </div>
         </div>
 
-        <div class="proj-item">
-          <div class="p-head">
-            <span class="p-title">📝 AI Exam Review System · exam-smart-checker</span>
-            <a class="p-link" href="projects/exam-smart-checker/index.en.html">Details →</a>
-          </div>
-          <div class="p-desc">LLM + vector-retrieval platform for exam error detection and duplicate checking, with multi-dimension judgment, question-type routing and historical-bank comparison.</div>
-          <div class="tag-list">
-            <span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag green">NLP</span>
-          </div>
-        </div>
-
-        <div class="proj-item">
-          <div class="p-head">
-            <span class="p-title">🧰 Review Toolkit · checker-tools</span>
-            <a class="p-link" href="projects/checker-tools/index.en.html">Details →</a>
-          </div>
-          <div class="p-desc">A 4-in-1 Streamlit toolbox covering PDF parsing, bad-case generation, model evaluation and training-set export, with Docker Compose deployment.</div>
-          <div class="tag-list">
-            <span class="tag">Python</span><span class="tag">Streamlit</span><span class="tag">Docker</span><span class="tag green">Data Engineering</span>
-          </div>
-        </div>
-
       </div>
+      <a class="btn btn-outline proj-more" href="projects/index.en.html">More projects →</a>
     </section>
 
     <section id="research" class="home-section">

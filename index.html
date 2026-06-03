@@ -67,7 +67,7 @@
     </section>
 
     <section id="projects" class="home-section">
-      <h2>项目</h2>
+      <h2>精选项目</h2>
       <div class="proj-list">
 
         <div class="proj-item">
@@ -76,8 +76,20 @@
             <a class="p-link" href="projects/mm-dataset-factory/index.html">详情 →</a>
           </div>
           <div class="p-desc">从 Word 试卷一键产出多模态错题图像数据集。4 阶段流水线（结构化 → VLM 错误规划 → AI 生图 → 质检导出）+ SSE 实时推流 + 生成后评估闭环。附完整中英双语技术文档仓库。</div>
+          <div class="p-note">📊 用本平台产出的数据集做成了评测基准 → <a href="edufig-ic/">EduFig-IC：分级图文一致性检测基准</a></div>
           <div class="tag-list">
             <span class="tag">FastAPI</span><span class="tag">React 19</span><span class="tag">SQLAlchemy async</span><span class="tag">SSE</span><span class="tag green">多模态</span>
+          </div>
+        </div>
+
+        <div class="proj-item featured-bench">
+          <div class="p-head">
+            <span class="p-title">📊 图文一致性评测基准 · EduFig-IC</span>
+            <a class="p-link" href="edufig-ic/">查看 →</a>
+          </div>
+          <div class="p-desc">面向理工科含图试题的分级图文一致性检测基准（L1/L2/L3 三级难度，973 图文样本），用于评测多模态大模型的细粒度图文对齐与幻觉检测能力。数据由上方数据集工厂自动产出。</div>
+          <div class="tag-list">
+            <span class="tag">多模态评测</span><span class="tag">图文一致性</span><span class="tag">VLM</span><span class="tag green">Benchmark</span>
           </div>
         </div>
 
@@ -92,29 +104,8 @@
           </div>
         </div>
 
-        <div class="proj-item">
-          <div class="p-head">
-            <span class="p-title">📝 AI 智能试卷审校系统 · exam-smart-checker</span>
-            <a class="p-link" href="projects/exam-smart-checker/index.html">详情 →</a>
-          </div>
-          <div class="p-desc">基于 LLM + 向量检索的试卷错误检测与查重平台，支持多维错误判定、题型路由与历史题库对比。</div>
-          <div class="tag-list">
-            <span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag green">NLP</span>
-          </div>
-        </div>
-
-        <div class="proj-item">
-          <div class="p-head">
-            <span class="p-title">🧰 审校辅助工具集 · checker-tools</span>
-            <a class="p-link" href="projects/checker-tools/index.html">详情 →</a>
-          </div>
-          <div class="p-desc">涵盖 PDF 解析、坏例生成、模型评测、训练集导出的 4 合 1 Streamlit 工具箱，配套 Docker Compose 部署。</div>
-          <div class="tag-list">
-            <span class="tag">Python</span><span class="tag">Streamlit</span><span class="tag">Docker</span><span class="tag green">数据工程</span>
-          </div>
-        </div>
-
       </div>
+      <a class="btn btn-outline proj-more" href="projects/index.html">更多项目 →</a>
     </section>
 
     <section id="research" class="home-section">
