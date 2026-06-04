@@ -112,11 +112,12 @@
       <h2>研究经历</h2>
 
       <div class="entry">
-        <div class="entry-head"><span>试卷审校多 Agent 系统开发 · 实习（拓维海云天）</span><span class="when">2026.03 – 2026.06</span></div>
-        <div class="tagline">LLM / Agent / vLLM</div>
+        <div class="entry-head"><span>试卷审校与多模态数据工程 · 实习（拓维信息 Talkweb）</span><span class="when">2026.03 – 2026.06</span></div>
+        <div class="tagline">LLM / Agent / 多模态 / 数据工程</div>
         <ul>
-          <li>搭建多 Agent 试卷审校系统：基于 LLM 构建错别字、语法、逻辑、语义多维错误检测，实现题目解析 → 多类别判定 → 结果聚合的完整 pipeline。</li>
-          <li>设计图文一致性两阶段审校链路与评测数据流水线（VLM 带图检测 + LLM 二次对账 + 四步强制对账清单），驱动 Recall 由 52% 提升至 75%+。</li>
+          <li><strong>多语言试卷审校 Agent · <a href="projects/exam-checker-agent/index.html">exam-checker-agent</a></strong>：将单机 Streamlit 工具重构为生产级批处理平台——自动拆题 + 逐题路由检测 + 四段式图文一致性审校 + 三类查重 + 可量化评测；用 VLM 带图检测 + LLM 二次对账 + 四步强制对账清单，将图文一致性 Recall 由 52% 提升至 75%+。React + FastAPI + Docker 全栈。</li>
+          <li><strong>多模态数据集工厂 · <a href="projects/mm-dataset-factory/index.html">mm_dataset_factory</a></strong>：从 Word/DOCX 试卷一键产出多模态错题图像数据集，4 阶段流水线（结构化 → VLM 错误规划 → AI 生图 → 质检导出）+ SSE 实时推流 + 生成后评估闭环，Skill-as-contract 交付架构，附完整中英双语技术文档。</li>
+          <li><strong>图文一致性评测基准 · <a href="edufig-ic/">EduFig-IC</a></strong>：用上方流水线产出的数据，整理成面向理工科含图试题的分级图文一致性检测基准（L1/L2/L3 三级、973 图文样本），评测多模态大模型的细粒度图文对齐与幻觉检测能力。</li>
         </ul>
       </div>
 
