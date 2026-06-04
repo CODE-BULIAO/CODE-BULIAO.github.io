@@ -115,9 +115,9 @@
         <div class="entry-head"><span>试卷审校与多模态数据工程 · 实习（拓维信息 Talkweb）</span><span class="when">2026.03 – 2026.06</span></div>
         <div class="tagline">LLM / Agent / 多模态 / 数据工程</div>
         <ul>
-          <li><strong>多语言试卷审校 Agent · <a href="projects/exam-checker-agent/index.html">exam-checker-agent</a></strong>：将单机 Streamlit 工具重构为生产级批处理平台——自动拆题 + 逐题路由检测 + 四段式图文一致性审校 + 三类查重 + 可量化评测；用 VLM 带图检测 + LLM 二次对账 + 四步强制对账清单，将图文一致性 Recall 由 52% 提升至 75%+。React + FastAPI + Docker 全栈。</li>
-          <li><strong>多模态数据集工厂 · <a href="projects/mm-dataset-factory/index.html">mm_dataset_factory</a></strong>：从 Word/DOCX 试卷一键产出多模态错题图像数据集，4 阶段流水线（结构化 → VLM 错误规划 → AI 生图 → 质检导出）+ SSE 实时推流 + 生成后评估闭环，Skill-as-contract 交付架构，附完整中英双语技术文档。</li>
-          <li><strong>图文一致性评测基准 · <a href="edufig-ic/">EduFig-IC</a></strong>：用上方流水线产出的数据，整理成面向理工科含图试题的分级图文一致性检测基准（L1/L2/L3 三级、973 图文样本），评测多模态大模型的细粒度图文对齐与幻觉检测能力。</li>
+          <li><strong>试卷审校 Agent 平台 · <a href="projects/exam-checker-agent/index.html">exam-checker-agent</a></strong>：开发面向高校期末考试与研究生考试的试卷审校平台，自动检测错别字、语法、逻辑、语义、图文一致性等 10 类错误（跨中/日/德/法 4 语言共 20 个检测任务）；采用「解析 → 逐题路由 → 检测 → 去重聚合 → 查重 → 报告」流水线，图文一致性用 VLM 带图检测 + 强制对账清单 + 纯文本复审兜底的四段式链路，将图文不一致检测召回率由 52% 提升至 88%、F1 0.89–0.92、精确率 0.95+。Python / FastAPI / React / SQLite / Docker 全栈。</li>
+          <li><strong>审校测试数据集生成平台 · <a href="projects/mm-dataset-factory/index.html">mm_dataset_factory</a></strong>：开发为审校系统造测试数据的平台，从真实 Word/DOCX 试卷中提取含图题目，按 L1/L2/L3 三级（换图错配 / 参数不匹配 / 逻辑无解）规划错误，用 VLM 错误规划 + Seedream / Wan 文生图模型造错 + 生成后评估闭环（校验数值锚点 pass/repair/regenerate），批量生成题干与图片不匹配的图文对；FastAPI + React + SQLAlchemy async 全栈、SSE 实时推流。</li>
+          <li><strong>图文一致性评测基准 · <a href="edufig-ic/">EduFig-IC</a></strong>：用上方流水线产出的数据，整理成面向理工科含图试题的分级图文一致性检测基准（L1/L2/L3 三级、973 图文样本），评测多模态大模型（VLM）对图文不一致的检测能力。</li>
         </ul>
       </div>
 
