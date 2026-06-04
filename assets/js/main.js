@@ -4,11 +4,16 @@
   if (!btn) return;
   btn.addEventListener('click', function () {
     const path = window.location.pathname;
+    let target;
     if (path.endsWith('index.en.html')) {
-      window.location.href = path.replace('index.en.html', 'index.html');
+      target = path.replace('index.en.html', 'index.html');
+    } else if (path.endsWith('index.html')) {
+      target = path.replace('index.html', 'index.en.html');
     } else {
-      window.location.href = path.replace('index.html', 'index.en.html');
+      // Directory-style URL, e.g. "/" or "/projects/mm-dataset-factory/"
+      target = path.replace(/\/?$/, '/') + 'index.en.html';
     }
+    window.location.href = target;
   });
 })();
 
