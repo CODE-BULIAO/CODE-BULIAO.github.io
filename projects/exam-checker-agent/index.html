@@ -189,6 +189,13 @@
         （弱实现版本召回仅约 0.26），且通过「复审只许 false→true」保住了精确率。仅纳入具备视觉能力的多模态模型对比。
       </div>
 
+      <div class="callout green">
+        <strong>🔬 Prompt/流程消融实验（同集对比）</strong>
+        在同一数据集（973 样本）、同一 judge 口径下对比「极简 prompt / 单一强 prompt / 四段式全流程 × qwen3.6-plus / 27b」6 种配置，得到：
+        <b>模型能力决定上限、Prompt 是精确率↔召回率的拨盘、四段式流程脚手架对弱模型(27b)才显著（强模型 plus 一句话 prompt 已接近全流程）</b>。完整表格 + 图表 + 详细结论见
+        <a href="https://github.com/CODE-BULIAO/exam-checker-agent/blob/main/docs/12-消融实验-prompt与流程.md" target="_blank" rel="noopener">消融实验文档 →</a>
+      </div>
+
       <h2>Agent 还是工作流？（诚实剖析）</h2>
       <p>
         它是一条<strong>确定性多阶段流水线</strong>，里面嵌了<strong>两个受约束的 LLM 决策点</strong>：

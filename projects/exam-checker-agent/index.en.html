@@ -164,6 +164,13 @@
         Only vision-capable multimodal models are compared.
       </div>
 
+      <div class="callout green">
+        <strong>🔬 Prompt/pipeline ablation (same dataset)</strong>
+        On one dataset (973 samples) and one judge, comparing "minimal prompt / single strong prompt / four-stage full pipeline × qwen3.6-plus / 27b" (6 configs):
+        <b>model capability sets the ceiling; the prompt is a precision↔recall dial; the four-stage scaffolding only matters for the weaker model (27b) — for the strong model (plus) a one-line prompt already nears the full pipeline</b>. Full table + charts + detailed conclusions:
+        <a href="https://github.com/CODE-BULIAO/exam-checker-agent/blob/main/docs/12-消融实验-prompt与流程.md" target="_blank" rel="noopener">ablation doc →</a>
+      </div>
+
       <h2>Agent or Workflow? (an honest take)</h2>
       <p>
         It is a <strong>deterministic multi-stage pipeline</strong> with <strong>two constrained LLM decision points</strong>:
